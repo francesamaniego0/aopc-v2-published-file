@@ -1,0 +1,234 @@
+/* Shared maintenance (Module 3) page shell */
+.page-panel {
+  width: 100%;
+  background-color: var(--panel, var(--light));
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s ease;
+}
+.page-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+}
+.page-panel-header h3 {
+  color: var(--accent);
+  font-family: "Montserrat-SemiBold";
+  font-size: 20px;
+}
+
+/* Wraps the action buttons in a page-panel-header (History / Import / Template / Add New) so they
+   lay out as a deliberate row instead of relying on native <button> inline-block default flow. */
+.page-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-panel-actions .action-divider {
+  width: 1px;
+  align-self: stretch;
+  min-height: 20px;
+  background: var(--secondary-light);
+  margin: 0 2px;
+}
+
+.excel-import-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-add {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+.btn-add:hover { background-color: #a97e22; box-shadow: var(--shadow-gold); }
+.btn-add:active { transform: scale(0.97); }
+.btn-add:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.tbl-action {
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  margin: 0 2px;
+  color: var(--dark);
+  display: inline-flex;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.tbl-action:hover { background-color: var(--accent); color: white; }
+.tbl-action.delete:hover { background-color: var(--secondary-red); color: white; }
+/* Faded-but-clickable — used where clicking still gives an explanatory message (e.g. "why can't I delete this"), not a true disabled state. */
+.tbl-action.disabled-look { opacity: 0.4; }
+.tbl-action.disabled-look:hover { background-color: transparent; color: var(--dark); opacity: 0.6; }
+
+/* Form layout inside modal */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-grid-tight { margin-bottom: 1rem; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field.full { grid-column: 1 / -1; }
+.form-field label { font-size: 13px; color: var(--dark); font-weight: 600; }
+.form-field label .req { color: var(--secondary-red); }
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  box-shadow: inset 1px 1px 3px 1px var(--shadow);
+  background-color: var(--light);
+  color: var(--dark);
+  font-size: 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.form-field textarea { resize: vertical; min-height: 70px; }
+
+/* Narrow numeric-entry column inside a datagrid table (e.g. privilege-matrix User/VIP counts). */
+.col-narrow { width: 80px; }
+
+.btn-save-modal {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+.btn-save-modal:hover { background-color: #a97e22; box-shadow: var(--shadow-gold); }
+.btn-save-modal:active { transform: scale(0.97); }
+.btn-save-modal:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-save-modal:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn-save-modal-spaced { margin-top: 0.5rem; }
+
+/* Destructive-action variant (ConfirmDialog's Delete button) — reuses the existing brand red. */
+.btn-save-modal.danger { background-color: var(--secondary-red); }
+.btn-save-modal.danger:hover { background-color: #8a1f22; box-shadow: 0 2px 12px rgba(171, 38, 42, 0.32); }
+
+.btn-cancel-modal {
+  background: transparent;
+  color: var(--dark);
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.btn-cancel-modal:hover { color: var(--accent); }
+.btn-cancel-modal:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Status pill */
+.status-pill { padding: 3px 10px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 600; }
+.status-pill.active { background: var(--status-success-bg); color: var(--status-success-fg); border: 1px solid var(--status-success-fg); }
+.status-pill.inactive { background: var(--status-error-bg); color: var(--status-error-fg); border: 1px solid var(--status-error-fg); }
+
+/* Tabs (registration) */
+.tab-bar { display: flex; gap: 6px; margin-bottom: 15px; flex-wrap: wrap; }
+.tab-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--secondary-light);
+  color: var(--dark);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.tab-btn.active { background: var(--accent); color: white; }
+.tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Audit timeline */
+.audit-timeline { display: flex; flex-direction: column; gap: 14px; }
+.audit-item { display: flex; gap: 12px; }
+.audit-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.audit-dot.insert { background: var(--status-success-fg); }
+.audit-dot.update { background: var(--status-warn-fg); }
+.audit-dot.delete { background: var(--status-error-fg); }
+.audit-dot.default { background: var(--secondary-dark); }
+.audit-card-item {
+  flex: 1;
+  border: 1px solid var(--secondary-light);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  background: var(--light);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s ease;
+}
+.audit-card-item:hover { box-shadow: var(--shadow-md); }
+.audit-card-head { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.audit-badge { padding: 2px 8px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 600; text-transform: uppercase; }
+.audit-badge.insert { background: var(--status-success-bg); color: var(--status-success-fg); }
+.audit-badge.update { background: var(--status-warn-bg); color: var(--status-warn-fg); }
+.audit-badge.delete { background: var(--status-error-bg); color: var(--status-error-fg); }
+.audit-badge.default { background: var(--secondary-light); color: var(--dark); }
+.audit-meta { font-size: 12px; color: var(--secondary-dark); }
+
+/* Audit diff table (old vs new value comparison inside a history record) */
+.audit-diff-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
+.audit-diff-table th { text-align: left; padding: 5px 8px; color: var(--secondary-dark); font-weight: 600; border-bottom: 1px solid var(--secondary-light); }
+.audit-diff-table td { padding: 5px 8px; border-bottom: 1px solid var(--secondary-light); color: var(--dark); word-break: break-word; }
+.audit-diff-table tr.changed td:nth-child(2) { color: var(--status-error-fg); text-decoration: line-through; }
+.audit-diff-table tr.changed td:nth-child(3) { color: var(--status-success-fg); font-weight: 600; }
+
+/* Sticky Actions column — pins the last column of a datagrid table so row actions stay reachable
+   without horizontal scrolling. Applied via a `sticky-actions` class on `.datagrid-scroll`. */
+.sticky-actions table th:last-child,
+.sticky-actions table td:last-child {
+  position: sticky;
+  right: 0;
+  background: var(--panel, var(--light));
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+/* Zebra/hover states use flattened, fully opaque colors (not the translucent --zebra-bg/gold-tint
+   used on regular rows) — a sticky cell sits on top of scrolled content, so a translucent
+   background lets that content bleed through as the row is scrolled underneath it. */
+.sticky-actions table tbody tr:nth-child(even) td:last-child { background: var(--zebra-bg-solid); }
+.sticky-actions table tbody tr:hover td:last-child { background: var(--row-hover-bg-solid); }
+
+/* Thumbnail + title in a single datagrid cell (e.g. Offering/Business grids), instead of a
+   separate leading "Image" column. */
+.cell-with-thumb { display: flex; align-items: center; gap: 8px; }
+
+/* Image upload field (Add/Edit modals) */
+.image-upload-field { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+.image-upload-thumb { position: relative; width: 84px; height: 84px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--secondary-light); }
+.image-upload-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.image-upload-remove {
+  position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%;
+  border: none; background: rgba(0,0,0,0.6); color: white; cursor: pointer; font-size: 13px; line-height: 1;
+}
+.image-upload-remove:hover { background: var(--secondary-red); }
+.image-upload-dropzone {
+  width: 84px; height: 84px; display: flex; align-items: center; justify-content: center; text-align: center;
+  border: 2px dashed var(--secondary-light); border-radius: var(--radius-sm); cursor: pointer; font-size: 12px;
+  color: var(--secondary-dark); transition: border-color 0.15s ease, color 0.15s ease; position: relative;
+}
+.image-upload-dropzone:hover { border-color: var(--accent); color: var(--accent); }
+.image-upload-dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }

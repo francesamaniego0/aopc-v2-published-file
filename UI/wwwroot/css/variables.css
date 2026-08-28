@@ -1,0 +1,98 @@
+:root {
+  --light: white;
+  --panel: white;
+  --dark: black;
+  --primary: black;
+  --secondary-light: #d7d2cb;
+  --secondary-dark: #979699;
+  --secondary-brown: #887861;
+  --accent: #c89328;
+  --secondary-gray: #8F9092;
+  --secondary-red: #AB262A;
+  --secondary-green: #132D28;
+
+  --shade: rgba(125, 125, 125, 0.5);
+  --shadow: rgba(200, 200, 200, 0.5);
+  --sidebarwidth: 200px;
+  --sidebarwidth-collapsed: 76px;
+  --topbarheight: 100px;
+
+  /* Elevation scale: layered shadows (tight + soft) instead of one flat blur, for real depth. */
+  --shadow-sm: 0 1px 2px rgba(20, 20, 20, 0.06), 0 1px 1px rgba(20, 20, 20, 0.08);
+  --shadow-md: 0 2px 6px rgba(20, 20, 20, 0.08), 0 10px 24px rgba(20, 20, 20, 0.08);
+  --shadow-lg: 0 4px 10px rgba(20, 20, 20, 0.10), 0 18px 44px rgba(20, 20, 20, 0.13);
+  --shadow-gold: 0 2px 12px rgba(200, 147, 40, 0.28);
+
+  /* Radius scale, replacing ad hoc per-component values. */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Status pill/badge tokens (light theme default). */
+  --status-success-bg: #e8f8f5;
+  --status-success-fg: #1abc9c;
+  --status-error-bg: #fdecea;
+  --status-error-fg: #e74c3c;
+  --status-warn-bg: #fff8e1;
+  --status-warn-fg: #f39c12;
+
+  --zebra-bg: rgba(215, 210, 203, 0.18);
+
+  /* Opaque equivalents of --zebra-bg / row-hover, for sticky cells that must fully occlude
+     scrolled content behind them (a translucent background would let it bleed through). */
+  --zebra-bg-solid: #f8f7f6;
+  --row-hover-bg-solid: #f9f4e9;
+}
+
+.darkmode {
+  /* Was pure black — read as harsh/"super black" against the gold accent. Near-black instead,
+     with panels one step lighter than the page background for real depth (see --panel below). */
+  --light: #141414;
+  --panel: #1e1e1e;
+  --dark: #ededed;
+  /* Neutral/structural tokens get dark-safe values too — --accent and the semantic
+     secondary-red/green/brown/gray brand colors below are intentionally untouched. */
+  --secondary-light: #3a3a3a;
+  --secondary-dark: #b8b8b8;
+  --shade: rgba(0, 0, 0, 0.6);
+  --shadow: rgba(0, 0, 0, 0.65);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.55), 0 10px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 4px 10px rgba(0, 0, 0, 0.6), 0 18px 44px rgba(0, 0, 0, 0.55);
+  --shadow-gold: 0 2px 14px rgba(200, 147, 40, 0.35);
+
+  --status-success-bg: rgba(26, 188, 156, 0.16);
+  --status-success-fg: #4fd8bd;
+  --status-error-bg: rgba(231, 76, 60, 0.18);
+  --status-error-fg: #ff8478;
+  --status-warn-bg: rgba(243, 156, 18, 0.18);
+  --status-warn-fg: #ffbb54;
+
+  --zebra-bg: rgba(255, 255, 255, 0.045);
+
+  --zebra-bg-solid: #282828;
+  --row-hover-bg-solid: #2f2a1f;
+}
+
+@font-face {
+  font-family: "Montserrat-Reg";
+  src: url("../fonts/Montserrat/Montserrat-Regular.ttf");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("../fonts/Montserrat/Montserrat-Bold.ttf");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Montserrat-Light";
+  src: url("../fonts/Montserrat/Montserrat-Light.ttf");
+  font-display: swap;
+}
+@font-face {
+  font-family: "Montserrat-SemiBold";
+  src: url("../fonts/Montserrat/Montserrat-SemiBold.ttf");
+  font-display: swap;
+}

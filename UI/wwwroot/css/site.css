@@ -1,0 +1,33 @@
+@import "variables.css";
+@import "globals.css";
+@import "buttons.css";
+@import "sidebar.css";
+@import "topbar.css";
+@import "login.css";
+@import "main.css";
+@import "dashboard.css";
+@import "maintenance.css";
+@import "components.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Tailwind Preflight (base) resets margins on all elements with the same specificity as the
+   plain-CSS rules above, and since it's injected after them in the cascade it silently wins —
+   re-assert the shell's layout-critical margins here so the fixed topbar/sidebar don't cover
+   the scrollable content. */
+main {
+  margin-left: var(--sidebarwidth);
+  margin-top: var(--topbarheight);
+}
+
+/* Sidebar goes off-canvas below 1100px (see sidebar.css/topbar.css) — must live here, after the
+   Preflight reassertion above, or the plain `main` rule wins on specificity/source-order and the
+   content stays shifted even though the sidebar is no longer visible. */
+@media (max-width: 1100px) {
+  main {
+    margin-left: 0;
+    width: 100%;
+  }
+}

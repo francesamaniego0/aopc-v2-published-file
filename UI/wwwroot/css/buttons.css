@@ -1,0 +1,214 @@
+.add-btn {
+  width: 20%;
+  font-size: clamp(0.5rem, 2vw, 0.8rem);
+  margin: 10px;
+  padding: 5px;
+  background-color: var(--accent);
+  text-align: center;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--light);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.register {
+  background-color: var(--accent);
+  text-align: center;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  color: var(--light);
+  width: 35%;
+  border: 1px solid var(--accent);
+  margin-bottom: 5px;
+  padding: 5px 15px 5px 5px;
+  height: 25px;
+  font-size: 0.6vw;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.register i {
+  margin-right: 10px;
+}
+
+.btn-success {
+  color: #fff !important;
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  display: block !important;
+  width: 100% !important;
+  margin-bottom: 5px !important;
+  border-radius: var(--radius-md) !important;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.btn-info {
+  color: #000000 !important;
+  background-color: #D7D2CB !important;
+  border-color: #D7D2CB !important;
+  display: block !important;
+  width: 100% !important;
+  margin-bottom: 5px !important;
+  border-radius: var(--radius-md) !important;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+/* On-brand hover: darken the button's own gold rather than swap to an unrelated navy. */
+.add-btn:hover {
+  background: #a97e22;
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-success:hover {
+  background: black !important;
+  box-shadow: var(--shadow-md);
+  border-color: black !important;
+}
+
+.btn-info:hover {
+  background: black !important;
+  box-shadow: var(--shadow-md);
+  border-color: black !important;
+  color: white !important;
+}
+
+.register:hover {
+  background: #a97e22;
+  box-shadow: var(--shadow-gold);
+}
+
+.add-btn:active,
+.register:active,
+.btn-success:active,
+.btn-info:active {
+  transform: scale(0.97);
+}
+
+.add-btn:disabled,
+.register:disabled,
+.btn-success:disabled,
+.btn-info:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.add-btn:focus-visible,
+.register:focus-visible,
+.btn-success:focus-visible,
+.btn-info:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tbl-actions,
+.tbl-edit,
+.tbl-delete,
+.tbl-view,
+.tbl-sendemail,
+.admin-tbl-edit,
+.admin-tbl-delete,
+.admin-tbl-sendemail,
+.corp-tbl-edit,
+.corp-tbl-delete,
+.corp-tbl-sendemail {
+  display: flex;
+  gap: 5px;
+  margin: 0 5px;
+  justify-content: center;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tbl-actions:hover,
+.tbl-edit:hover,
+.tbl-delete:hover,
+.tbl-view:hover,
+.tbl-sendemail:hover,
+.admin-tbl-edit:hover,
+.admin-tbl-delete:hover,
+.corp-tbl-edit:hover,
+.corp-tbl-delete:hover,
+.corp-tbl-sendemail:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+/* Sliding sun/moon pill switch, replaces the old single icon-swap button. */
+.theme-switch {
+  position: relative;
+  width: 52px;
+  height: 26px;
+  margin: auto 0;
+  padding: 0 5px;
+  border: none;
+  background-color: var(--secondary-dark);
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.2s ease, box-shadow 0.15s ease;
+}
+
+.theme-switch:hover { box-shadow: var(--shadow-gold); }
+.theme-switch:active .theme-switch-thumb { width: 22px; }
+
+.theme-switch:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-switch-icon {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  z-index: 1;
+  transition: color 0.2s ease;
+}
+
+.theme-switch:not(.is-dark) .theme-switch-icon.sun { color: var(--accent); }
+.theme-switch.is-dark .theme-switch-icon.moon { color: var(--accent); }
+
+.theme-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--light);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, width 0.1s ease;
+}
+
+.theme-switch.is-dark .theme-switch-thumb {
+  transform: translateX(26px);
+}
+
+.btn-hamburger {
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font: inherit;
+  font-size: 18px;
+  color: var(--dark);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  margin-right: 8px;
+}
+
+.btn-hamburger:hover {
+  color: var(--accent);
+}
+
+.btn-hamburger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

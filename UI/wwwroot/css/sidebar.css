@@ -1,0 +1,266 @@
+.sidebar-collapsed {
+  --sidebarwidth: var(--sidebarwidth-collapsed);
+}
+
+/* .sidebar establishes its own stacking context (position:fixed + z-index), so the flyout's
+   own z-index below can only ever compete with siblings *inside* .sidebar — it can't out-rank
+   .topbar (z-index:3) that way. Raise .sidebar itself above the topbar, but only while
+   collapsed (i.e. only when the flyout can appear), to avoid changing the normal stacking. */
+.sidebar-collapsed .sidebar {
+  z-index: 4;
+}
+
+.sidebar {
+  width: var(--sidebarwidth);
+  height: 100vh;
+  background-color: var(--light);
+  box-shadow: var(--shadow-lg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 12px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(200, 147, 40, 0.1);
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.15s ease, transform 0.25s ease, color 0.15s ease;
+  z-index: 1;
+}
+
+.sidebar-toggle:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.sidebar-collapsed .sidebar-toggle {
+  transform: rotate(180deg);
+}
+
+@media (max-width: 1100px) {
+  .sidebar-toggle {
+    display: none;
+  }
+}
+
+.sidebar .img-container {
+  width: 70%;
+  margin: 10px auto;
+  transition: width 0.25s ease;
+}
+
+/* Collapsed rail: the logo file is a wide banner (mark + wordmark baked into one image, no
+   separate icon-only asset exists) — crop to just the circular gold mark on the left instead
+   of shrinking the whole banner (which would squash the wordmark illegibly small). */
+.sidebar-collapsed .sidebar .img-container {
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.sidebar-collapsed .sidebar .img-container .logo {
+  width: auto;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: left center;
+}
+
+.sidebar .sidenav {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.sidebar .sidenav ul {
+  list-style: none;
+  width: 100%;
+}
+
+.sidebar .sidenav ul li {
+  height: 44px;
+  font-size: clamp(0.5rem, 1.6vw, 0.85rem);
+  display: flex;
+  width: 100%;
+}
+
+.sidebar .sidenav ul li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding-left: 10px;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--dark);
+}
+
+.sidebar .sidenav ul li a:hover,
+.sidebar .sidenav ul li a.active {
+  color: var(--accent);
+  fill: var(--accent);
+  background-color: rgba(200, 147, 40, 0.1);
+  border-left-color: var(--accent);
+}
+
+.sidebar .sidenav ul li a .nav-icon {
+  width: 24px;
+  height: 24px;
+  margin: auto;
+  fill: var(--dark);
+  display: flex;
+  align-items: center;
+}
+
+.sidebar .sidenav ul li a.active .nav-icon,
+.sidebar .sidenav ul li a:hover .nav-icon {
+  fill: var(--accent);
+}
+
+.sidebar .sidenav ul li a span {
+  flex: 1;
+  text-align: left;
+}
+
+/* Specificity must beat ".sidebar .sidenav ul li { height: 44px }" above (2 classes + 2 types)
+   or that rule wins and li.maintenance never actually grows to fit the expanded submenu — it
+   did, silently, until this got verified: the collapsed-rail flyout never depended on this li
+   growing (it escapes flow via position:fixed), so the bug had no visible symptom until now. */
+.sidebar .sidenav ul li.maintenance {
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.sidenav li.maintenance > a {
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.sidenav ul.sub-nav {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  /* .sub-nav is a flex item inside li.maintenance (display:flex; flex-direction:column).
+     Flex items get an automatic min-height of 0 once overflow isn't visible, which lets
+     flex-shrink collapse this to 0 regardless of max-height — pin it so max-height is what
+     actually governs the size. */
+  flex-shrink: 0;
+}
+
+.sidenav ul.sub-nav li {
+  height: 32px;
+  font-size: 0.78rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.sidenav ul.sub-nav li > a {
+  width: 100%;
+  padding-left: 44px;
+}
+
+/* Accordion: expansion is purely click-driven (.open, toggled from SideBar.razor's
+   ToggleMaintenance) — no :hover auto-expand here, that would fight the deliberate click
+   control. Collapsed icon-rail mode restores hover as a flyout further down, where it doesn't
+   conflict with anything since there's no inline accordion to fight in that mode. */
+.sidenav li.maintenance.open .sub-nav {
+  max-height: 320px;
+}
+
+.maintenance-chevron {
+  margin-left: auto;
+  font-size: 0.7em;
+  transition: transform 0.25s ease;
+}
+
+.sidenav li.maintenance.open .maintenance-chevron {
+  transform: rotate(180deg);
+}
+
+/* Desktop icon-rail: hide labels, center icons. */
+.sidebar-collapsed .sidebar .sidenav ul li a span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  position: absolute;
+  pointer-events: none;
+}
+
+.sidebar-collapsed .sidebar .sidenav ul li a {
+  justify-content: center;
+  padding-left: 0;
+}
+
+/* No inline accordion when collapsed (the submenu becomes a flyout instead, below) — the
+   chevron only makes sense next to the "Maintenance" label, which is hidden in this mode too. */
+.sidebar-collapsed .maintenance-chevron {
+  display: none;
+}
+
+/* Collapsed rail: hovering the icon reveals the flyout. This doesn't fight anything the way
+   hover-to-expand did in the normal accordion, since there's no inline expansion happening here. */
+.sidebar-collapsed .sidenav li.maintenance:hover .sub-nav {
+  max-height: 320px;
+}
+
+/* Collapsed Maintenance submenu becomes a flyout panel. position:fixed (not absolute/relative)
+   so it escapes .sidenav's overflow-y:auto, which would otherwise clip anything extending past
+   the rail's own (now much narrower) width. */
+.sidebar-collapsed .sidenav li.maintenance .sub-nav {
+  position: fixed;
+  left: calc(var(--sidebarwidth) + 8px);
+  top: 60px;
+  width: 210px;
+  background: var(--light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 5;
+}
+
+.sidebar-collapsed .sidenav li.maintenance .sub-nav li {
+  justify-content: flex-start;
+  padding: 0 12px;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--shade);
+  z-index: 19;
+}
+
+@media (max-width: 1100px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+    z-index: 20;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+}

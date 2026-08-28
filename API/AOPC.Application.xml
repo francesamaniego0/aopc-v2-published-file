@@ -1,0 +1,1805 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AOPC.Application</name>
+    </assembly>
+    <members>
+        <member name="T:AOPC.Application.Common.Interfaces.IAdminAccessService">
+            <summary>Ports AuthSystem.Data.Controller.ApiAdminAcessController's FinalUserRegistration action.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IAuditHistoryService">
+            <summary>Ports AuthSystem.Data.Controller.ApiAuditHistoryController's business logic — queries against
+            the generic EF-interceptor-driven AuditLog/LoginAttempt tables (distinct from the legacy manual
+            AuditTrailEntry table served by IAuditTrailService).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IAuditHistoryService.GetAuditHistoryAsync(AOPC.Application.DTOs.AuditHistory.AuditHistoryFilterDto,System.Threading.CancellationToken)">
+            <summary>Paged, optionally entity-name/date-range filtered AuditLog history, ordered by
+            ChangedAt descending (mirrors GetAuditHistory).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IAuditHistoryService.GetLoginHistoryAsync(AOPC.Application.DTOs.AuditHistory.LoginHistoryFilterDto,System.Threading.CancellationToken)">
+            <summary>Paged, optionally username(partial)/date-range/success filtered LoginAttempt history,
+            ordered by AttemptDate descending (mirrors GetLoginHistory).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IAuditHistoryService.GetEntityHistoryAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Unpaged AuditLog history for one specific entity instance, ordered by ChangedAt
+            descending (mirrors GetEntityHistory).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IAuditHistoryService.GetAvailableEntitiesAsync(System.Threading.CancellationToken)">
+            <summary>Distinct, alphabetically-sorted list of EntityName values across all AuditLog rows
+            (mirrors GetAvailableEntities).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IAuditTrailService">
+            <summary>Ports AuthSystem.Data.Controller.ApiAuditTrailController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IAuditTrailService.GetAuditTrailListAsync(AOPC.Application.DTOs.AuditTrail.AuditTrailListRequestDto,System.Threading.CancellationToken)">
+            <summary>Paged CMS audit-trail list (mirrors buildAuditTrailList + AudittrailList's paging math).
+            Returns a single-element list wrapping the paged result, matching the original wire shape.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IAuditTrailService.GetQrTrailListAsync(AOPC.Application.DTOs.AuditTrail.QrTrailListRequestDto,System.Threading.CancellationToken)">
+            <summary>Paged QR-code scan log list (mirrors buildQRTrailList + QRTrailList's paging math).
+            Returns a single-element list wrapping the paged result, matching the original wire shape.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IAuthService">
+            <summary>Ports AuthSystem.Data.Controller.ApiLogInController's LogIn action, modernized to issue real
+            JWT access/refresh tokens, plus a genuinely new Refresh action (the original only stubbed a refresh-token
+            flow with dead code that was never wired up).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IBusinessLocationService">
+            <summary>Ports AuthSystem.Data.Controller.ApiBusinessLocController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessLocationService.GetBusinessLocationListAsync(System.Threading.CancellationToken)">
+            <summary>Active business locations joined with status (mirrors BusinessLocList).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessLocationService.GetBusinessLocationListCmsAsync(AOPC.Application.DTOs.Catalog.BusinessLocationListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Business Location list (adjustment pass 2 — server-side
+            pagination, mirrors VendorService.GetVendorListCmsAsync's shape).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessLocationService.SaveBusinessLocationAsync(AOPC.Application.DTOs.Catalog.SaveBusinessLocationRequest,System.Threading.CancellationToken)">
+            <summary>Insert (Id == 0) or update (Id != 0) a business location.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessLocationService.DeleteBusinessLocationAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Soft-delete guarded by a usage check against Business/Vendor.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IBusinessService">
+            <summary>Ports AuthSystem.Data.Controller.ApiBusinessController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessByBusinessIdAsync(System.String,System.Threading.CancellationToken)">
+            <summary>SP_GetBFByBID-backed lookup by the computed BusinessId (e.g. 'Hotel-01').</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessListAsync(System.Threading.CancellationToken)">
+            <summary>Active businesses joined with type/location/status (mirrors buildBusiness()).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessFilteredAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Same as <see cref="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessListAsync(System.Threading.CancellationToken)"/>, filtered down to a single Id.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessListCmsAsync(AOPC.Application.DTOs.Catalog.BusinessListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Business (Hotels) list (adjustment pass 2 — server-side
+            pagination, mirrors VendorService.GetVendorListCmsAsync's shape).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessGalleryAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Splits a business's semicolon-delimited Gallery field into individual items.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.GetBusinessCardListAsync(System.Threading.CancellationToken)">
+            <summary>SP_BusinessHotelList-backed card list.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.SaveBusinessAsync(AOPC.Application.DTOs.Catalog.SaveBusinessRequest,System.Threading.CancellationToken)">
+            <summary>Insert (Id == 0) or partial-update (Id != 0) a business.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessService.DeleteBusinessAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Soft-delete: sets Active to EntityStatus.Inactive.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IBusinessTypeService">
+            <summary>Ports AuthSystem.Data.Controller.ApiBusinessTypeController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessTypeService.GetBusinessTypeListAsync(AOPC.Application.DTOs.Catalog.BusinessTypeFilterRequest,System.Threading.CancellationToken)">
+            <summary>Paged, optionally corporate-filtered business type list (mirrors buildBusinessType +
+            BusinessTypeList's paging math). Returns a single-element list wrapping the paged result, matching
+            the original wire shape.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessTypeService.GetBusinessTypeListV2Async(System.Threading.CancellationToken)">
+            <summary>Unpaged CMS list (mirrors BusinessTypeListv2).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessTypeService.GetBusinessTypeListV2PagedAsync(AOPC.Application.DTOs.Catalog.BusinessTypeCmsListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Business Type list (adjustment pass 2 — server-side
+            pagination, mirrors VendorService.GetVendorListCmsAsync's shape).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessTypeService.SaveBusinessTypeAsync(AOPC.Application.DTOs.Catalog.SaveBusinessTypeRequest,System.Threading.CancellationToken)">
+            <summary>Insert (Id == 0) or update (Id != 0) a business type.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IBusinessTypeService.DeleteBusinessTypeAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Soft-delete guarded by a usage check against Vendor/Offering/Privilege.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.ICorporateListingService">
+            <summary>Ports AuthSystem/API.Data.Controller.ApiCorporateListingController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateListingService.GetAllUserCountAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Mirrors GetAllUserCount (registered/unregistered/VIP counts for one corporate).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateListingService.GetUnregisteredListAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Mirrors UnregisteredList; corporateId == 0 means "all corporates".</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateListingService.EmailUnregisterUserAsync(AOPC.Application.DTOs.Corporate.UnregisteredUserEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>Sets Active = 9 for each given user id, then emails every recipient the registration-invite
+            template. Mirrors EmailUnregisterUser.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateListingService.GetCorporateUserCountAllAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors CorporateUserCountAll (per-corporate registered/unregistered/VIP breakdown).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.ICorporatePrivilegeService">
+            <summary>Ports AuthSystem.Data.Controller.ApiCorporatePrivilegeController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporatePrivilegeService.GetPrivilegeCorporateListAsync(AOPC.Application.DTOs.Corporate.PrivilegeCorporateIdsRequest,System.Threading.CancellationToken)">
+            <summary>Mirrors PrivilegeCorporateList's two-step existence-check logic (CorporatePrivilegeTier
+            then MembershipPrivilege) to determine each privilege's stats/isVIP for the given corporate.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporatePrivilegeService.SaveCorporatePrivilegeListAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Corporate.PrivCorpDto},System.Threading.CancellationToken)">
+            <summary>Deletes all CorporatePrivilegeTier rows for the first item's CorporateId, then re-inserts
+            selected privilege/corporate pairs where Stats == "1". Mirrors SaveCorporatePrivilegeList.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.ICorporateService">
+            <summary>Ports AuthSystem.Data.Controller.ApiCorporateController's business logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateService.GetCompanyListAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors buildCompanyList() + CompanyList.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateService.GetCompanyListCmsAsync(AOPC.Application.DTOs.Corporate.CorporateListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Corporate list (adjustment pass 2 — server-side pagination,
+            mirrors VendorService.GetVendorListCmsAsync's shape).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateService.GetMembershipByCorporateIdAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Mirrors MembershipCorporate's inner-join lookup. Returns null if no corporate/membership
+            match is found (the controller maps null/empty-Id input to BadRequest("ERROR") itself).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateService.SaveCorporateAsync(AOPC.Application.DTOs.Corporate.CorporateModelDto,System.Threading.CancellationToken)">
+            <summary>Insert (Id == 0) or update (Id != 0) a corporate, rebuilding its CorporatePrivilegeTier
+            rows from the target membership's MembershipPrivilege rows. Mirrors the active (validated)
+            UpdateCorporate overload.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateService.DeleteCorporateAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Soft-delete (Status = 6) guarded by a usage check against active/pending Users. Mirrors
+            DeleteCorproate (action name preserved verbatim, including the legacy typo).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ICorporateService.ImportCorporateAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Corporate.CorporateModelDto},System.Threading.CancellationToken)">
+            <summary>Bulk import; duplicate-name rows are skipped. Mirrors ImportCorporate, including its quirk
+            of returning only the LAST processed row's status message (not an overall summary).</summary>
+        </member>
+        <member name="P:AOPC.Application.Common.Interfaces.ICurrentUserService.CorporateId">
+            <summary>The caller's own corporate id, sourced from the "CorporateId" JWT claim (null for
+            non-corporate-scoped users, e.g. Oyster admins with no corporate claim, or system/anonymous
+            callers). Corporate-scoped endpoints should read this instead of trusting a client-supplied
+            corporate id filter.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IExcelService.ReadAsync(System.IO.Stream,System.Int32,System.Threading.CancellationToken)">
+            <summary>Reads rows from the first worksheet, treating the given row as the header row.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IExcelService.Write(System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IEnumerable{System.Collections.Generic.IReadOnlyList{System.Object}})">
+            <summary>Builds a single-worksheet .xlsx from the given headers + rows and returns its bytes.
+            Used by the dashboard export endpoints.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IExcelService.WriteWorkbook(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IEnumerable{System.Collections.Generic.IReadOnlyList{System.Object}}}})">
+            <summary>Builds a multi-worksheet .xlsx, one sheet per (SheetName, Headers, Rows) tuple, and
+            returns its bytes. Used by the dashboard global-export endpoint.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IFamilyMemberService">
+            <summary>Ports the family member CRUD actions from
+            AuthSystem.Data.Controller.ApiRegisterController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IFamilyMemberService.ListFamilyMemberAsync(AOPC.Application.DTOs.FamilyMember.FamMemberRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors ListFamilyMember: active (Status == 1) family members, optionally filtered by
+            FamMemberRequestDto.id.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IFamilyMemberService.DeleteFamilyMemberAsync(AOPC.Application.DTOs.FamilyMember.DeleteFamilyMemberDto,System.Threading.CancellationToken)">
+            <summary>Mirrors deleteFamilyMember: soft-delete (Status = 0). Returns a 3-state result so the
+            controller can preserve the original's unusual Conflict/Problem/Ok status-code mix.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IFamilyMemberService.SaveFamilyMemberAsync(AOPC.Application.DTOs.FamilyMember.SaveFamilyMemberDto,System.Threading.CancellationToken)">
+            <summary>Mirrors SaveFamilyMember. Returns (isDuplicate, item) — item is null when isDuplicate is true.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IFamilyMemberService.ListFamilyMemberV2Async(AOPC.Application.DTOs.FamilyMember.FamMemberRequestV2Dto,System.Threading.CancellationToken)">
+            <summary>Mirrors ListFamilyMemberV2: same shape as ListFamilyMemberAsync but filtered on
+            FamMemberRequestV2Dto.FamilyUserId (both endpoints preserved as-is per the original, not
+            consolidated).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IFamilyMemberService.UpdateFamilyMemberStatusAsync(AOPC.Application.DTOs.FamilyMember.FamilyMemberStatusDto,System.Threading.CancellationToken)">
+            <summary>Mirrors updateFamilyMemberStatus: updates ApplicationStatus by Id.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.FamilyMemberDeleteResult">
+            <summary>Tri-state outcome for deleteFamilyMember, matching the original's three distinct response
+            shapes (Problem for a null DbSet, Conflict for not-found/already-deleted, Ok for success).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IJwtTokenGenerator.GenerateAccessToken(System.Int32,System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>userType is the numeric UserType discriminator (1=Oyster/System admin, 2=Corporate admin,
+            3=Member); corporateId is null for non-corporate-scoped users. Both are embedded as claims so
+            WebApi endpoints (via ICurrentUserService) can self-scope without trusting a client-supplied filter.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IJwtTokenGenerator.ValidateRefreshToken(System.String)">
+            <summary>Validates a refresh token's signature/expiry and returns the userId claim, or null if invalid.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IMembershipService">
+            <summary>Application-layer use cases behind ApiMembershipController. Ported from
+            ApiMembershipController's 6 active endpoints.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.SaveVendorPrivilegeListAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Membership.PrivVendListItemDto},System.Threading.CancellationToken)">
+            <summary>SaveVendorePrivilegeList — replaces the full VendorPrivilegeTier set for a privilege.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.GetPrivilegeVendorListAsync(AOPC.Application.DTOs.Membership.VendorIdsDto,System.Threading.CancellationToken)">
+            <summary>PrivilegeVendorList — vendor selection list for a single privilege (CMS checkbox list).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.GetMembershipListAsync(System.Threading.CancellationToken)">
+            <summary>MembershipList — active membership tiers (buildMembership), excludes the "ALL TIER" sentinel.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.GetMembershipListCmsAsync(AOPC.Application.DTOs.Membership.MembershipListParamDto,System.Threading.CancellationToken)">
+            <summary>MembershipListCMS — server-side paged/searched/sorted CMS listing (new — shared
+            pagination plumbing, mirrors VendorService.GetVendorListCmsAsync).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.GetMembershipByIdAsync(AOPC.Application.DTOs.Membership.MembershipIdDto,System.Threading.CancellationToken)">
+            <summary>MembershipFilterbyID — single membership tier by Id.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.SaveMembershipTierAsync(AOPC.Application.DTOs.Membership.MembershipVm,System.Threading.CancellationToken)">
+            <summary>SaveMembershipTier — insert/update. Success = false maps to BadRequest at the controller.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IMembershipService.DeleteMembershipAsync(AOPC.Application.DTOs.Membership.MembershipIdDto,System.Threading.CancellationToken)">
+            <summary>DeleteMemship — soft-delete (Status = Inactive), guarded by a Corporate/Offering usage check.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.INotificationService">
+            <summary>Ports the 6 active endpoints of the legacy ApiNotifcationController (typo preserved at the
+            controller level; this interface uses the corrected spelling since it's a new file).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.INotificationService.InsertNotificationsAsync(AOPC.Application.DTOs.Notification.NotificationInsertDto,System.Threading.CancellationToken)">
+            <summary>Mirrors InsertNotifications. Success == false means the controller should return
+            BadRequest(Result) — either the (practically unreachable, see implementation notes) per-user
+            existence-check failure, or an exception was caught.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.INotificationService.GetNotificationsByEmployeeIdAsync(AOPC.Application.DTOs.Notification.NotifIdDto,System.Threading.CancellationToken)">
+            <summary>Mirrors GetNotifEmpId.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.INotificationService.MarkAllReadAsync(AOPC.Application.DTOs.Notification.NotifIdDto,System.Threading.CancellationToken)">
+            <summary>Mirrors MarkReadAll_Notification. Success == false ("nothing to mark") maps to the
+            original's odd BadRequest-for-no-op response.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.INotificationService.MarkOneReadAsync(AOPC.Application.DTOs.Notification.NotifIdUpdateDto,System.Threading.CancellationToken)">
+            <summary>Mirrors UpdateNotification. Same BadRequest-for-no-op pattern as MarkAllReadAsync.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.INotificationService.GetNotificationListV2Async(AOPC.Application.DTOs.Notification.NotificationSearchFilterDto,System.Threading.CancellationToken)">
+            <summary>Mirrors NotificationListV2 (CMS paged list, dynamic sort, Distinct-collapsed rows).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.INotificationService.SendNotificationPerUserCorporateAsync(AOPC.Application.DTOs.Notification.CorporateNotificationEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors SendNotificationPerUserCorporate. Success == false means a corporate name in
+            data.CorporateList didn't match any Corporate row (controller maps this to BadRequest).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IOfferingService">
+            <summary>Application-layer use cases behind ApiOfferingController. Ported from ApiOfferingController's 11 active endpoints.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetCmsOfferingListAsync(AOPC.Application.DTOs.Offering.OfferingListParamDto,System.Threading.CancellationToken)">
+            <summary>CMSOfferingListV2 — CMS offering list: LEFT-JOINed, search + dynamic sort, paged.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetOfferingListAsync(AOPC.Application.DTOs.Offering.OfferingListFilterDto,System.Threading.CancellationToken)">
+            <summary>OfferingList [POST] — mobile offering list, filtered by caller's corporate/business type, paged.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetOfferingListForCallerAsync(System.String,System.String,System.Threading.CancellationToken)">
+            <summary>
+            OfferingList [GET] overload. The legacy action read CorporateId/UserType from
+            HttpContext.Session; the rewrite accepts them as optional query-string parameters instead
+            (see controller/report for rationale). Unpaged, exactly like the original.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetOfferingFilterListAsync(AOPC.Application.DTOs.Offering.BtypeModelDto,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>OfferingFilterList — same corporate/userType branching as the GET overload, plus a business-type-name filter.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetOfferingsByVendorIdAsync(AOPC.Application.DTOs.Offering.VendorIdDto,System.Threading.CancellationToken)">
+            <summary>OfferingsFilteredbyVID — active offerings for a given external vendor id.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetOfferingByOfferingIdAsync(AOPC.Application.DTOs.Offering.OfferIdDto,System.Threading.CancellationToken)">
+            <summary>OfferingsFilteredbyID — single active offering by external offering id.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.GetOfferingFilterListV2Async(AOPC.Application.DTOs.Offering.BtypeModelV2Dto,System.Threading.CancellationToken)">
+            <summary>OfferingFilterListV2 — grouped by business-type name, active/not-expired, optional corporate-id filter.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.SaveOfferingAsync(AOPC.Application.DTOs.Offering.OfferingParameterDto,System.Threading.CancellationToken)">
+            <summary>SaveOffering — insert/update. Returns (Success, Result); Success = false maps to BadRequest at the controller.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.ImportOfferingAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Offering.OfferingVm},System.Threading.CancellationToken)">
+            <summary>
+            ImportOffering — bulk insert. Returns the raw status string exactly as the legacy action
+            did (see implementation notes: the legacy action never actually returns its "Registered
+            Successfully" message — it returns the last per-row status, or an exception message. That
+            quirk is preserved for client compatibility.)
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.DeleteOfferingListAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Offering.DeleteOfferDto},System.Threading.CancellationToken)">
+            <summary>DeleteOfferingList — bulk soft-delete (StatusId = Inactive).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IOfferingService.DeleteOfferingAsync(AOPC.Application.DTOs.Offering.DeleteOfferDto,System.Threading.CancellationToken)">
+            <summary>DeleteOffering — single soft-delete (StatusId = Inactive).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IOtpCacheService">
+            <summary>Tracks the validity window of a short-lived one-time code without a DB column — used by the
+            login-OTP flow to enforce a 5-minute expiry on top of the code persisted in User.Otp. Presence of the
+            cache entry is the sole expiry signal; eviction means "expired" regardless of what User.Otp still holds.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IPasswordHasher">
+            <summary>
+            New passwords are hashed with BCrypt. Existing accounts still hold passwords reversibly
+            encrypted with the legacy AES cipher, so verification tries BCrypt first and falls back to
+            the legacy cipher — the legacy path is never used for new hashes.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IPositionService">
+            <summary>Ports the position CRUD actions from AuthSystem.Data.Controller.ApiRegisterController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPositionService.GetPositionListAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors PositionList: active (Status == 5) positions ordered by name.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPositionService.SavePositionAsync(AOPC.Application.DTOs.Position.SavePositionRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors SavePosition. Note: the original's update branch has a pre-existing bug —
+            it returns success=false (maps to BadRequest) even on a successful update, with the message
+            "Updated Successfully". Preserved exactly; callers should not treat Success as authoritative for
+            the update path's HTTP status.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPositionService.DeletePositionAsync(AOPC.Application.DTOs.Position.DeletePositionDto,System.Threading.CancellationToken)">
+            <summary>Mirrors DeletePosition: soft-delete (Status = 6) guarded by a usage check against
+            User.PositionId rows with Active != 6.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPositionService.GetPositionListCmsAsync(AOPC.Application.DTOs.Position.PositionListParamDto,System.Threading.CancellationToken)">
+            <summary>Adjustment-pass-2 server-side-paginated CMS Position list (new — mirrors
+            VendorService.GetVendorListCmsAsync's search/sort/page-and-wrap pattern over the same active
+            positions as GetPositionListAsync). Returns a single-element list wrapping the paged result.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IPrivilegeService">
+            <summary>Application-layer use cases behind ApiPrivilegeController. Ported from
+            ApiPrivilegeController's 9 active endpoints.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeListAsync(System.Threading.CancellationToken)">
+            <summary>PrivilegeList — active privileges, LEFT-JOINed with Status/BusinessType/Vendor.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeListCmsAsync(AOPC.Application.DTOs.Privilege.PrivilegeListParamDto,System.Threading.CancellationToken)">
+            <summary>PrivilegeListCMS — server-side paged/searched/sorted CMS listing (new — shared
+            pagination plumbing, mirrors VendorService.GetVendorListCmsAsync).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeMembershipListAsync(AOPC.Application.DTOs.Privilege.PrivIdDto,System.Threading.CancellationToken)">
+            <summary>PrivilegeMembershipList — every active privilege, flagged whether already linked to the
+            given membership.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeCardByUserAsync(AOPC.Application.DTOs.Privilege.UserIdDto,System.Threading.CancellationToken)">
+            <summary>PrivilegeCardbyUser — mobile privilege-card list for an employee.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeByPidAsync(AOPC.Application.DTOs.Privilege.PrivilegeIdDto,System.Threading.CancellationToken)">
+            <summary>GetPrivilegeByPID — single privilege by its computed PrivilegeID.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.SavePrivilegeAsync(AOPC.Application.DTOs.Privilege.PrivilegeVm,System.Threading.CancellationToken)">
+            <summary>SavePrivilege — insert/update. Success = false maps to BadRequest at the controller.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.SavePrivilegeListAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Privilege.PrivMemDto},System.Threading.CancellationToken)">
+            <summary>SavePrivilegeList — bulk replace of a membership's linked privileges.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.DeletePrivilegeAsync(AOPC.Application.DTOs.Privilege.DeletePrivDto,System.Threading.CancellationToken)">
+            <summary>DeletePrivilege — soft-delete (Active = Inactive), guarded by a MembershipPrivilege usage check.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeByUserAndBTypeAsync(AOPC.Application.DTOs.Privilege.UserIdDto,System.Threading.CancellationToken)">
+            <summary>PrivilegeByUserAndBType — mobile privilege list filtered by employee id and business type name.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IPrivilegeService.GetPrivilegeFilterIsVipAsync(AOPC.Application.DTOs.Privilege.UserIdDto,System.Threading.CancellationToken)">
+            <summary>PrivilegeFilterIsVIP — active/optimized VIP-aware privilege list for an employee.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IRegistrationService">
+            <summary>Ports the registration/OTP flows from AuthSystem.Data.Controller.ApiRegisterController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.ChangePasswordAsync(AOPC.Application.DTOs.Registration.ChangePasswordDto,System.Threading.CancellationToken)">
+            <summary>Mirrors ChangePassword. Returns (found, message).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.FinalUserRegistrationAsync(AOPC.Application.DTOs.Registration.UserRegistrationDto,System.Threading.CancellationToken)">
+            <summary>Mirrors FinalUserRegistration: updates credentials, sends an SMS OTP via ISmsService, and
+            inserts a RegistrationOtp row with Status = 10. Returns (found, message).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.FinalUserRegistration2Async(AOPC.Application.DTOs.Registration.FinalUserRegistration2Dto,System.Threading.CancellationToken)">
+            <summary>Mirrors FinalUserRegistration2: like FinalUserRegistrationAsync but generates its own
+            random 6-digit OTP locally (no SMS send). Returns (found, message).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.VerifyOtpAsync(AOPC.Application.DTOs.Registration.VerifyOtpRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors VerifyOTP. Returns (matched, message). The original's dead no-op else-branch
+            (setting OTPVerified.Status = 10 on an always-null reference) is preserved literally.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.ImportAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Registration.UserRegistrationDto},System.Threading.CancellationToken)">
+            <summary>Mirrors Import: bulk pre-registers users with a generated pseudo-token, Active = 2, and
+            writes an AuditTrailEntry per row. Returns only the LAST processed row's status message (or the
+            exception text), matching the original's quirk exactly — not an overall summary.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IRepository`1">
+            <summary>Generic thin data-access surface for entities with no aggregate-specific queries.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IRepository`1.PageAsync``1(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Linq.Expressions.Expression{System.Func{`0,``0}},System.Boolean,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Server-side filtered, ordered, paged query. Filtering, ordering, counting and
+            Skip/Take all execute in the database, so large tables (e.g. AuditLog) are never fully
+            materialised into memory. Returns the requested page plus the total matching row count.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IStoredProcedureExecutor">
+            <summary>
+            Parameterized access to the 16 stored procedures the legacy app depends on. All parameters
+            are bound (never string-concatenated) — this replaces the original's raw ADO.NET DbManager.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.ISupportRealtimeNotifier">
+            <summary>Port for pushing a real-time "new support ticket" notification to connected Oyster-admin CMS
+            clients. The concrete implementation (SignalR IHubContext&lt;SupportHub&gt;) lives in AOPC.WebApi, since
+            Application code must not reference transport/framework types directly — this keeps SupportService/
+            UserAccessService (inner layers) testable without a real SignalR hub.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportRealtimeNotifier.NotifySupportRequestCreatedAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Broadcasts to all connected clients. Payload is intentionally minimal (id + current pending
+            count) — the CMS client just refetches/increments rather than rendering a full ticket payload
+            over the wire.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.ISupportService">
+            <summary>Ports the 15 active endpoints of the legacy ApiSupportController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetSupportCountListAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors GetSupportCountList. Any exception is swallowed and returned as an Ok(...) string
+            by the controller — this method lets exceptions propagate; the controller does the try/catch to
+            preserve that exact 200-on-error quirk.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetCallToActionsListAsync(AOPC.Application.DTOs.Support.UserFilterCatDayDto,System.Threading.CancellationToken)">
+            <summary>Mirrors PostCallToActionsList.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetClickCountsListAllAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Mirrors GetClickCountsListAll.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetCountAllUserListAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors GetCountAllUserlist.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetSupportDetailsListAsync(AOPC.Application.DTOs.Support.SupportDetailRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors GetSupportDetailsList.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.UpdateSupportStatusAsync(AOPC.Application.DTOs.Support.SupportStatusUpdateDto,System.Threading.CancellationToken)">
+            <summary>Mirrors updateSupportStatus. Returns null when no Support row matches the id (controller
+            maps this to BadRequest).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.SendSupportUpdateEmailAsync(AOPC.Application.DTOs.Support.SupportUpdateEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors EmailSupportUpdate (single-recipient status-update email).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetSupportCountAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors GetSupportCount. Preserves the original's non-defensive
+            TotalSupportCount.FirstOrDefault() usage (throws if the table is empty).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.UpdateSupportCountAsync(AOPC.Application.DTOs.Support.SupportCountRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors updateSupportCount. Same non-defensive no-null-check quirk as GetSupportCountAsync.</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickRestaurantListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)" -->
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickWellnessListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Mirrors PostMostClickWellnessList (BuildMostClickList with module "Wellness").</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickHealthListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Mirrors PostMostClickHealthList (BuildMostClickList with the literal module "news").</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickedHospitalityListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)" -->
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickStoreListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Mirrors PostMostCickStoreList (action-name typo preserved at the controller level) —
+            BuildMostClickList with module "Shops".</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetNewRegisteredAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Mirrors PostNewRegistered.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IUserAccessService">
+            <summary>Ports AuthSystem.Data.Controller.ApiUserAcessController's business logic (the 9 active
+            endpoints only — see the controller for the dead-code endpoints intentionally not ported).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.InsertAuditTrailAsync(AOPC.Application.DTOs.UserAccess.AuditTrailDto,System.Threading.CancellationToken)">
+            <summary>Mirrors AudtiTrails (action name/typo preserved from the legacy route). Always stamps
+            DateCreated = DateTime.Now, ignoring whatever the client sent. Success flag maps to 200/400; the
+            returned StatusResultDto is the exact response body for both outcomes.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.SaveJwTokenAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Mirrors SaveJWToken: base64-encodes the email into a pseudo-token, inserts a Token row
+            (Status=5, ExpiryDate = now+1day) and sends the reset-link HTML email. On success returns a
+            StatusResultDto body; on failure the original returns BadRequest(ex.Message) — a bare string, NOT
+            the StatusResultDto — so ErrorMessage is populated instead of Result in that case.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.SendTrailSupportAsync(AOPC.Application.DTOs.UserAccess.SupportModelDto,System.Threading.CancellationToken)">
+            <summary>Mirrors TrailSupport: looks up the user by EmployeeId, inserts a Support row (Status=14),
+            and sends the internal notification + acknowledgment emails. Success=true covers BOTH the
+            "user found and processed" case (Result.Status = "New Support Inserted") AND the original's
+            fall-through "user not found, no exception" case (Result.Status left null) — both map to 200 in the
+            original. Success=false is the caught-exception path (Result.Status = "Error: " + message, 400).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.GetKeyExpiryAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Mirrors GetKeyExpiry. Found -&gt; 200 + body; NotFound -&gt; original returns a bare
+            BadRequest() with NO response body (Result is populated but must be discarded by the controller in
+            this case); Error -&gt; 400 + body ("Error").</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.DeleteTokenAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Mirrors DeleteToken. Same 3-way outcome shape as GetKeyExpiryAsync.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.InsertQrCodeLogAsync(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
+            <summary>Mirrors QrCodeLogs: inserts a QrCodeLog row then calls the same email-sending logic as
+            QrSendEmail directly (in-process method call, mirroring the original's same-controller invocation —
+            not an HTTP call).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.SendQrScanEmailAsync(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
+            <summary>Mirrors QrSendEmail: sends the "QR code scanned" notification email to the hardcoded
+            internal To/Bcc list. The original has NO try/catch — any exception is left to propagate (500) and
+            the action otherwise always returns a bare Ok(). Preserved: this method does not catch exceptions
+            itself; the controller does not either.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.GetUserInfoByJwtokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Mirrors UserInfoFilteredbyJWToken: sequential null-guarded lookups (User -&gt; Corporate -&gt;
+            Position -&gt; Status -&gt; Membership), matching the original's own step-by-step structure rather than
+            a single join. Always returns a (possibly empty/default) VM — never throws for a not-found token.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserAccessService.ImportAuditTrailsFromExcelAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>Mirrors the Upload action's Excel-parsing + bulk-insert logic (via IExcelService, so this
+            project stays free of a direct ClosedXML reference). Column positions 1-8 map to
+            Actions/Module/EmployeeId/Business/UserId/ActionId/Status/DateCreated, matching the original's exact
+            column-index mapping and its DateTime.Parse/DateTime.Now fallback for column 8. Returns the number of
+            rows imported. Throws on failure — the controller maps that to StatusCode(500, ex.Message), matching
+            the original's catch block exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IUserService">
+            <summary>Ports the user list/CRUD/status actions from
+            AuthSystem.Data.Controller.ApiRegisterController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.GetUserListAsync(AOPC.Application.DTOs.User.UserListRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors UserList: paged + dynamically sorted Type == 3 user list.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.GetRegistrationListV2Async(AOPC.Application.DTOs.User.UserFilterRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors DisplayRegistrationListv2: unpaged Type == 3 user list (returns the full filtered
+            list, matching the original which does not paginate this action).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.GetCorporateListAsync(AOPC.Application.DTOs.User.UserFilterRequestDto,System.Threading.CancellationToken)">
+            <summary>Mirrors Corporatelist: unpaged Type == 2 user list.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.GetCorporateAdminUserByIdAsync(AOPC.Application.DTOs.User.CorporateAdminUserFilterByIdDto,System.Threading.CancellationToken)">
+            <summary>Mirrors CorporateAdminUserFilterById: filtered by Id + CorporateID, no Type filter applied
+            (matches the original exactly).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.GetAdminListAsync(System.Threading.CancellationToken)">
+            <summary>Mirrors AdminList: unpaged Type == 1 (system admin) user list.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.SaveUserInfoAsync(AOPC.Application.DTOs.Registration.UserRegistrationDto,System.Threading.CancellationToken)">
+            <summary>Mirrors UpdateUserInfo: insert/update guarded by VIP-quota and user-count-quota checks
+            against the corporate's VipCount/Count, writes an AuditTrailEntry, and generates a pseudo-token via
+            PseudoTokenGenerator. Returns (success, message) — message is the raw string the original returns
+            (not wrapped in an object).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.EmailRemainingVipAsync(AOPC.Application.DTOs.User.CoporateVipDto,System.Threading.CancellationToken)">
+            <summary>Mirrors EmailRemainingVIP. Returns the literal strings "error" (quota exhausted email was
+            sent) or "success" (quota remains) — this inverted-sounding convention is preserved exactly from
+            the original.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IUserService.SendRegistrationEmailAsync(AOPC.Application.DTOs.User.SendRegistrationEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>New (not in the legacy original): sends a welcome/registration-invite email to each of the
+            given user ids and marks each successfully-emailed user's Active status as EntityStatus.EmailSent
+            (9) — the same status EmailUnregisterUserAsync already uses for "invite sent". Unknown ids or users
+            with no email on file are silently skipped (counted as not-sent) rather than failing the whole batch.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Interfaces.IVendorService">
+            <summary>
+            Application service for the Vendor domain — ports the 13 active endpoints of the legacy
+            ApiVendorController. Depends only on <see cref="T:AOPC.Application.Common.Interfaces.IRepository`1"/> abstractions and Domain
+            entities; no EF Core or transport types.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IVendorService.DeleteVendorAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Returns null when no vendor with the given id exists (controller maps this to BadRequest).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IVendorService.ImportVendorsAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Vendor.VendorImportItemDto},System.Threading.CancellationToken)">
+            <summary>Returns the same (intentionally quirky) status text the original returned via Content(...).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Interfaces.IVendorService.GetVendorListFilterByBtypeAsync(AOPC.Application.DTOs.Vendor.BtypeIdV2Dto,System.Threading.CancellationToken)">
+            <summary>Backs both VendorListFilterByBtypeIdV2 and VendorListFilterByBtypeId (identical bodies in the original).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Models.PaginationModel">
+            <summary>Matches the original API's paged-list response shape exactly (all fields as strings).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Models.StoredProcedureResults.OfferingFilterListResult">
+            <summary>Shared shape for SP_GetOfferingFilterList and SP_GetOfferingFilteredbyVID.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Models.StoredProcedureResults.PrivilegeFilteredByUserAndBTypeResult">
+            <summary>Shared shape for SP_GetPFByUserAndBType and SP_GetPrivilegeFbyUandBtype.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Models.SystemResourceInfo">
+            <summary>A snapshot of server resource utilization. All values are percentages (0.0-100.0).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Utils.OtpGenerator">
+            <summary>Shared 6-digit numeric one-time-code generator, used by both the registration-OTP flow
+            (RegistrationService, delivered via SMS) and the login-OTP flow (AuthService, delivered via email).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Utils.PseudoTokenGenerator">
+             <summary>
+             Ports the "Jwtoken" obfuscation helper duplicated inline in ApiRegisterController.Import and
+             ApiRegisterController.UpdateUserInfo. This is NOT a password and is never verified/decrypted —
+             it is a one-way opaque filler value stored on User.Jwtoken.
+            
+             The original generates 8 random shifted chars, then calls the legacy reversible
+             Cryptography.Encrypt(...) cipher on that random seed purely to obscure it before truncating to
+             the last 15 characters. Application code must not reference AOPC.Infrastructure (where the
+             ported legacy cipher lives), so IPasswordHasher.Hash(...) — already DI-registered, BCrypt-based —
+             is substituted here as an equivalent one-way opaque-string transform. This is a distinct
+             substitution from the "real" password-hashing swaps made elsewhere in this slice (ChangePassword,
+             FinalUserRegistration, etc.) since this value is never a credential; it's flagged here because it
+             reuses the same DI-registered service for a different purpose.
+             </summary>
+        </member>
+        <member name="T:AOPC.Application.AuditHealthServiceRegistration">
+            <summary>
+            Registers the AuditTrail + AuditHistory application services. HealthCheck has no service layer of its
+            own — HealthCheckController injects IRepository&lt;T&gt;/ISystemResourceService/IDatabaseBackupService
+            directly (all already registered by AOPC.Infrastructure.DependencyInjection), so nothing further is
+            registered here for it. The generic IRepository&lt;T&gt; open-generic registration also already lives
+            in AOPC.Infrastructure.DependencyInjection, so no repository wiring is needed here either.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.AuthServiceRegistration">
+            <summary>
+            Registers the Auth (login/refresh) + AdminAccess application services. The generic
+            <c>IRepository&lt;T&gt;</c> open-generic registration, IPasswordHasher, IJwtTokenGenerator,
+            ILoginAttemptService, and IRateLimitService all already live in AOPC.Infrastructure.DependencyInjection,
+            so no additional cross-cutting wiring is needed here. JWT bearer authentication middleware itself
+            (AddAuthentication/AddJwtBearer) is wired in Program.cs by a separate integration pass, not here.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.CatalogServiceRegistration">
+            <summary>
+            Registers the Business + BusinessType + BusinessLocation ("Catalog") application services. The
+            generic <c>IRepository&lt;T&gt;</c> open-generic registration already lives in
+            AOPC.Infrastructure.DependencyInjection, so no repository wiring is needed here.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.CorporateServiceRegistration">
+            <summary>
+            Registers the Corporate + CorporateListing + CorporatePrivilege application services. The generic
+            <c>IRepository&lt;T&gt;</c> open-generic registration already lives in
+            AOPC.Infrastructure.DependencyInjection, and IEmailService is already registered there too, so no
+            repository/email wiring is needed here.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.NotificationSupportServiceRegistration">
+            <summary>
+            Registers the Notification + Support application services. The generic
+            <c>IRepository&lt;T&gt;</c> open-generic registration already lives in
+            AOPC.Infrastructure.DependencyInjection, and IEmailService is already registered there too, so no
+            repository/email wiring is needed here.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.RegistrationServiceRegistration">
+            <summary>
+            DI registration for the Registration/User/Position/FamilyMember domain slice (ports
+            ApiRegisterController). Wired into Program.cs separately during the final integration pass — do
+            not call this from anywhere else in this wave.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.UserAccessServiceRegistration">
+            <summary>Registers the UserAccess application service. IRepository&lt;T&gt; and IEmailService/IExcelService
+            are already registered in AOPC.Infrastructure.DependencyInjection — no repository/email/excel wiring is
+            needed here.</summary>
+        </member>
+        <member name="T:AOPC.Application.VendorServiceRegistration">
+            <summary>
+            DI registration for the Vendor domain slice. Wired into Program.cs separately during the
+            final integration pass — do not call this from anywhere else in this wave.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AdminAccess.FinalUserRegistrationRequestDto">
+            <summary>Mirrors the subset of the legacy UserModel actually used by
+            ApiAdminAcessController.FinalUserRegistration.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AdminAccess.FinalUserRegistrationResultDto">
+            <summary>Internal Application-to-WebApi contract, mirrors the Corporate domain's
+            CorporateOperationResultDto pattern. The controller unwraps this into a RegisterStatsDto matching the
+            original's Registerstats response shape exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AdminAccess.RegisterStatsDto">
+            <summary>Ports ApiAdminAcessController's nested Registerstats class verbatim (same single-field shape).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditHistory.AuditHistoryFilterDto">
+            <summary>Request/filter parameters for GetAuditHistory (legacy query-string params).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditHistory.LoginHistoryFilterDto">
+            <summary>Request/filter parameters for GetLoginHistory (legacy query-string params).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditHistory.AuditHistoryRecordDto">
+            <summary>Row projection returned within GetAuditHistory's Records array.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditHistory.EntityHistoryRecordDto">
+            <summary>Row projection returned within GetEntityHistory's array (no ModuleName/EntityName/EntityId,
+            since those are already known from the route parameters).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditHistory.LoginHistoryRecordDto">
+            <summary>Row projection returned within GetLoginHistory's Records array.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditHistory.PagedHistoryResultDto`1">
+            <summary>Generic paged envelope shared by GetAuditHistory and GetLoginHistory
+            ({TotalRecords, Page, PageSize, TotalPages, Records}).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditTrail.AuditTrailItemDto">
+            <summary>Ports Audittrailvm. Note the field is named "status" (lowercase) and "EmployeeID" (legacy
+            casing) — preserved exactly for wire compatibility with existing CMS clients.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditTrail.AuditTrailPagedDto">
+            <summary>Paged wrapper for AudittrailList. The original wraps a single-element
+            List&lt;PagedItems&gt; — that shape is preserved by the controller/service returning
+            a one-item list of this wrapper.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditTrail.AuditTrailListRequestDto">
+            <summary>Request body for AudittrailList (legacy PagionationParameter).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditTrail.QrTrailListRequestDto">
+            <summary>Request body for QRTrailList (legacy PagionationParameter).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditTrail.QrTrailItemDto">
+            <summary>Ports QrTrailVM.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.AuditTrail.QrTrailPagedDto">
+            <summary>Paged wrapper for QRTrailList. The original wraps a single-element
+            List&lt;QRPagedItems&gt; — that shape is preserved by the controller/service returning
+            a one-item list of this wrapper.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Auth.AuthenticatedUserDto">
+            <summary>Modernized replacement for the original's ad-hoc AppModel{Status,Key} + whatever the caller
+            separately looked up about the user. Captures the joined User+UserType+Corporate+Position data actually
+            available at login time.</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Auth.AuthenticatedUserDto.UserType">
+            <summary>Raw user-type discriminator: 1 = Oyster/System admin, 2 = Corporate admin, 3 = Member.
+            Carried to the client so role checks are reliable rather than matching the free-text Role string.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Auth.AuthStatus">
+            <summary>Outcome discriminator for AuthService.LoginAsync/RefreshAsync. The controller maps this to the
+            appropriate HTTP status code (429 / 400 / 401 / 200) — the Application layer stays HTTP-agnostic.</summary>
+        </member>
+        <member name="F:AOPC.Application.DTOs.Auth.AuthStatus.MembershipExpired">
+            <summary>Preserves the original's narrow (and arguably-buggy) "expires exactly today" quirk: the
+            legacy code only checked dayDifference == 0, not &lt;= 0, so already-past-expiry accounts still log
+            in as if active. Preserved exactly per instructions; not broadened here.</summary>
+        </member>
+        <member name="F:AOPC.Application.DTOs.Auth.AuthStatus.OtpRequired">
+            <summary>Credentials were valid; a one-time email verification code has been sent and must be
+            confirmed via VerifyLoginOtpAsync before a token is issued. No Data is populated on this result.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Auth.LoginRequestDto">
+            <summary>Login payload. Mirrors the subset of the legacy UserModel actually used by
+            ApiLogInController.LogIn (Username/Password only).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Auth.LoginResponseDto">
+            <summary>Modernized login/refresh success payload: real JWT access + refresh tokens (replacing the
+            original's home-grown pseudo-token stored in User.Jwtoken) plus the authenticated user's profile.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Auth.RefreshRequestDto">
+            <summary>Payload for the new (not-a-port) Refresh endpoint.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Auth.VerifyLoginOtpRequestDto">
+            <summary>Request body for ApiLogInController.VerifyLoginOtp — confirms the email code sent by LogIn
+            and, on success, issues the JWT access/refresh tokens that LogIn itself withheld.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessCardDto">
+            <summary>
+            Business/hotel card shape shared by GetBusinessFByBID and BusinessCardList
+            (mirrors the legacy BusinessCardVM).
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessGalleryItemDto">
+            <summary>One gallery image entry, as returned by ApiBusinessController.BusinessArrray (name preserved
+            on the controller action; this is just the item shape, mirrors the legacy BusinessArray class).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessListItemDto">
+            <summary>
+            Business list row with joined type/location/status names (mirrors the legacy BusinessModelVM,
+            as produced by the original ApiBusinessController.buildBusiness()).
+            </summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Catalog.BusinessListItemDto.BusinessLocationId">
+            <summary>bl.Id.ToString() — mirrors the original's "blocid".</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Catalog.BusinessListItemDto.BusinessTypeId">
+            <summary>bt.Id.ToString() — mirrors the original's "btypeid".</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessLocationDto">
+            <summary>Mirrors the anonymous projection returned by ApiBusinessLocController.BusinessLocList.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.SaveBusinessLocationRequest">
+            <summary>Insert/update payload for UpdateBusinessLoc. Id == 0 means insert (mirrors the legacy
+            controller, which bound the request body directly to its EF-first BusinessLocation model).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessLocationListParamDto">
+            <summary>Request for the paged CMS Business Location list (adjustment pass 2 — server-side
+            pagination, mirrors VendorListParamV2Dto's shape).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessLocationPagedResultDto">
+            <summary>Paged CMS Business Location list response (adjustment pass 2).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.GetBusinessByIdRequest">
+            <summary>Request body for GetBusinessFByBID — looks a business up by its computed BusinessId
+            ('Hotel-0' + Id). Property name kept close to the legacy BusinessIDVM.BusinessID for wire compatibility
+            (System.Text.Json binds JSON property names case-insensitively by default).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessIdRequest">
+            <summary>Request body shared by BusinessFiltered and BusinessArrray — a single business's numeric Id,
+            as a string (mirrors the legacy Bid class).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.SaveBusinessRequest">
+            <summary>Insert/update payload for SaveBusiness. Id == 0 means insert.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessListParamDto">
+            <summary>Request for the paged CMS Business (Hotels) list (adjustment pass 2 — server-side pagination,
+            mirrors VendorListParamV2Dto's shape).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessPagedResultDto">
+            <summary>Paged CMS Business (Hotels) list response (adjustment pass 2).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessTypeCmsDto">
+            <summary>Unpaged CMS shape returned by BusinessTypeListv2 (mirrors the original controller's inline
+            anonymous projection).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessTypeDto">
+            <summary>Mirrors the legacy BusinessTypeVM — used by the paged, mobile-facing BusinessTypeList
+            endpoint.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessTypePagedResultDto">
+            <summary>
+            Paged wrapper for BusinessTypeList. The original API returns a single-element JSON array containing
+            this wrapper object (<c>List&lt;BusinessTypePagedModelVM&gt;</c> with exactly one item) — that quirky
+            shape is preserved here for wire compatibility with existing clients.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessTypeFilterRequest">
+            <summary>
+            Request body for the paged, mobile-facing BusinessTypeList endpoint (mirrors the legacy
+            filterByCorporate class). SearchParam and SortBy are accepted for wire compatibility but are unused —
+            the original controller's buildBusinessType/BusinessTypeList never applied them either.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.SaveBusinessTypeRequest">
+            <summary>Insert/update payload for UpdateBusinessType. Id == 0 means insert.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessTypeCmsListParamDto">
+            <summary>Request for the paged CMS Business Type list (adjustment pass 2 — server-side pagination,
+            mirrors VendorListParamV2Dto's shape).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.BusinessTypeCmsPagedResultDto">
+            <summary>Paged CMS Business Type list response (adjustment pass 2).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.DeleteByIdRequest">
+            <summary>Shared soft-delete request body for the Business, BusinessType and BusinessLocation delete
+            actions (mirrors the legacy DeleteB / DeleteBtype / DeleteById classes, which were structurally
+            identical).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.OperationResultDto">
+            <summary>Wire shape for the delete-action responses (mirrors the legacy Registerstats: a single
+            Status message, nothing else).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Catalog.SaveResultDto">
+            <summary>
+            Internal Application-to-WebApi contract for save/delete outcomes. Controllers unwrap this into the
+            legacy bare-string response (Save actions: <c>Ok(result.Message)</c> / <c>BadRequest(result.Message)</c>)
+            or into <see cref="T:AOPC.Application.DTOs.Catalog.OperationResultDto"/> (Delete actions), matching the original response shapes exactly.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateIdParameterRequest">
+            <summary>Request body shared by GetAllUserCount and UnregisteredList (mirrors the legacy
+            CorporateIdParameter class).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.UnregisteredUserEmailRequestDto">
+            <summary>Request body for EmailUnregisterUser (mirrors the legacy UnregisteredUserEmailRequest class).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateListItemDto">
+            <summary>Wire shape for CompanyList (mirrors the legacy CorporateVM / buildCompanyList()).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Corporate.CorporateListItemDto.StatusId">
+            <summary>Present on the legacy CorporateVM (Status_ID) but never populated by buildCompanyList — kept
+            here for wire compatibility; always null.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateModelDto">
+            <summary>Insert/update/import payload for Corporate (mirrors the legacy CorporateModel). Id == 0 means
+            insert (UpdateCorporate/ImportCorporate).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Corporate.CorporateModelDto.CompanyId">
+            <summary>DB-computed: 'Cmp-0' + Id — read-only, ignored on input.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateOperationResultDto">
+            <summary>Internal Application-to-WebApi contract for Corporate save/delete outcomes (mirrors the
+            Catalog domain's SaveResultDto pattern). Controllers unwrap this into the legacy bare-string response
+            (UpdateCorporate: <c>Ok(result.Message)</c> / <c>BadRequest(result.Message)</c>) or into a
+            RegisterStatsDto (DeleteCorproate), matching the original response shapes exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateIdRequest">
+            <summary>Request body for MembershipCorporate (mirrors the legacy "corporateid" class). Id is a string
+            on the wire (matches the original, which validates it as a non-empty, non-"0" string before parsing).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.DeleteCorporateRequest">
+            <summary>Request body for DeleteCorproate (mirrors the legacy "DeleteUser" class reused from
+            ApiRegisterController).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateListParamDto">
+            <summary>Request for the paged CMS Corporate list (adjustment pass 2 — server-side pagination,
+            mirrors VendorListParamV2Dto's shape).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporatePagedResultDto">
+            <summary>Paged CMS Corporate list response (adjustment pass 2).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.CorporateUserCountDto">
+            <summary>Response shape for CorporateUserCountAll (mirrors the legacy CorporateUserCountVM). All fields
+            are strings, matching the original exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.MembershipCorporateResultDto">
+            <summary>Response shape for MembershipCorporate (mirrors the legacy anonymous { Id, MembershipName }
+            projection).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.PrivCorpDto">
+            <summary>Bulk save request item for SaveCorporatePrivilegeList (mirrors the legacy PrivCorp class).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Corporate.PrivCorpDto.Status">
+            <summary>Sentinel used as the IsVip value: "0" maps to null, otherwise int.Parse(Status) — preserved
+            exactly from the original's odd sentinel mapping.</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Corporate.PrivCorpDto.Stats">
+            <summary>"1" means "include this row" — only rows with Stats == "1" are persisted.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.PrivCorpListItemDto">
+            <summary>Response row shape for PrivilegeCorporateList (mirrors the legacy PrivCorpListItem class). Id
+            and CorporateName are present on the legacy class but never populated by PrivilegeCorporateList — kept
+            here for wire compatibility; always null.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.PrivilegeCorporateIdsRequest">
+            <summary>Request body for PrivilegeCorporateList (mirrors the legacy "privIDs" class). Note: Id is used
+            both as the Corporate id (parsed to int for lookups) and echoed back verbatim as the CorporateId string
+            on every result row — preserved exactly, matching the original's dual use of this field.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.UnregisteredResultDto">
+            <summary>Response shape for UnregisteredList (mirrors the legacy UnregisteredResult class). Note the
+            original quirk: Count is the TOTAL unregistered-list count, repeated identically on every row (not a
+            per-row count) — preserved exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Corporate.UserCountListingDto">
+            <summary>Response shape for GetAllUserCount (mirrors the legacy UserCountListing view model).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.FamilyMember.DeleteFamilyMemberDto">
+            <summary>Request body for deleteFamilyMember (legacy DeletionModel).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.FamilyMember.FamilyMemberItemDto">
+            <summary>Row shape for ListFamilyMember/ListFamilyMemberV2 (legacy FamilyMemberModel returned directly).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.FamilyMember.FamilyMemberStatusDto">
+            <summary>Request AND response body for updateFamilyMemberStatus (legacy FamilyMemberStatus — the
+            original reuses the exact same class for both the incoming request and the outgoing result,
+            overwriting Status with a result message on the way out). Preserved as one shared type here too.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.FamilyMember.FamMemberRequestDto">
+            <summary>Request body for ListFamilyMember (legacy FamMemberRequest). page/pageSize are present for
+            request-contract parity but unused by the original action (no paging is actually applied).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.FamilyMember.FamMemberRequestV2Dto">
+            <summary>Request body for ListFamilyMemberV2 (legacy FamMemberRequestV2). Field name deliberately
+            differs from FamMemberRequestDto.id (FamilyUserId vs id) — both endpoints preserved as-is per the
+            original, not consolidated.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.FamilyMember.SaveFamilyMemberDto">
+            <summary>Request body for SaveFamilyMember (legacy FamilyMemberModelreq). DateCreated is a string,
+            parsed with DateTime.Parse by the service — matches the original's behavior exactly, including the
+            FormatException it throws on an invalid/missing date string.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.MembershipIdDto">
+            <summary>Request body for MembershipFilterbyID and DeleteMemship (legacy MembershipID / DeleteMem
+            — both were identically-shaped single-Id request classes, unified here).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.MembershipListParamDto">
+            <summary>Request for the CMS-paged MembershipList — mirrors the Vendor pattern
+            (VendorListParamV2Dto) for server-side pagination/search/sort.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.MembershipPagedVmDto">
+            <summary>Paged wrapper for the CMS MembershipList response — mirrors VendorPagedModelVmDto.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.MembershipModelVm">
+            <summary>Mirrors the legacy MembershipModelVM — response shape for MembershipFilterbyID.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.MembershipVm">
+            <summary>
+            Mirrors the legacy MembershipVM shape exactly (field names/casing preserved) for client
+            compatibility. Used both as a read projection (MembershipList) and as the insert/update
+            request payload (SaveMembershipTier), exactly as the original did.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.PrivVendListItemDto">
+            <summary>
+            Mirrors the legacy PrivVendListItem exactly. Used both as the bulk-save request payload
+            (SaveVendorePrivilegeList) and as the read-projection item (PrivilegeVendorList). Note "vid"
+            here is actually the VendorBusinessType join-row Id, not a Vendor.Id — a pre-existing mislabel
+            in the source, preserved as-is (see report).
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.RegisterStatsDto">
+            <summary>Generic status-message response (legacy Registerstats).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Membership.VendorIdsDto">
+            <summary>Request body for PrivilegeVendorList (legacy VenIDs).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.RegisterStatsDto">
+            <summary>Mirrors the legacy Registerstats response shape used by InsertNotifications.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotificationInsertDto">
+            <summary>Request body for InsertNotifications (legacy NotificationInsertModel).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotifIdDto">
+            <summary>Request body for GetNotifEmpId / MarkReadAll_Notification (legacy NotifId).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotifIdUpdateDto">
+            <summary>Request body for UpdateNotification (legacy NotifIdUpdate).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotificationItemDto">
+            <summary>Response row shape for GetNotifEmpId (legacy NotificationModel) — every field is a string,
+            matching the original's projection exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotificationSearchFilterDto">
+            <summary>Search/sort/paging parameters for NotificationListV2 (legacy NotificationSearchFilterModelVM).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotificationCmsItemDto">
+            <summary>Distinct-projected notification row used by the CMS list (legacy TblNotificationModel as
+            re-projected inside BuildNotificationList — only Details/Module/ItemId/DateCreated survive the
+            Distinct() collapse; Id/EmployeeId/IsRead/EmailStatus are intentionally absent).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.NotificationPagedDto">
+            <summary>Paged response for NotificationListV2 (legacy NotificationPagedModelVM).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Notification.CorporateNotificationEmailRequestDto">
+            <summary>Request body for SendNotificationPerUserCorporate (legacy CorporateNotificationEmailRequest).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.BtypeModelDto">
+            <summary>Request body for OfferingFilterList (legacy BtypeModel).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.BtypeModelV2Dto">
+            <summary>Request body for OfferingFilterListV2 (legacy BtypeModelV2).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.DeleteOfferDto">
+            <summary>Request body element for DeleteOfferingList/DeleteOffering (legacy DeleteOffer).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.OfferIdDto">
+            <summary>Request body for OfferingsFilteredbyID (legacy offeridID).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.OfferingListFilterDto">
+            <summary>Request body for the mobile OfferingList [POST] endpoint (legacy offeringListFilter).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Offering.OfferingListFilterDto.SearchParam">
+            <summary>Present on the legacy DTO but unused by buildOfferingList — kept for wire compatibility.</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Offering.OfferingListFilterDto.SortBy">
+            <summary>Present on the legacy DTO but unused by buildOfferingList — kept for wire compatibility.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.OfferingListParamDto">
+            <summary>Request body for CMSOfferingListV2 (legacy OfferingListParam).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.OfferingPagedModel">
+            <summary>Paged offering list response (legacy OfferingPagedModelVM). "items" casing preserved.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.OfferingParameterDto">
+            <summary>Request body for SaveOffering (legacy OfferingParameter).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.OfferingVm">
+            <summary>
+            Mirrors the legacy OfferingVM shape exactly (field names/casing preserved) for client
+            compatibility. Used both as a read projection and (for ImportOffering) as the bulk-insert
+            request payload, exactly as the original did.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.RegisterStatsDto">
+            <summary>Generic status-message response (legacy Registerstats).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Offering.VendorIdDto">
+            <summary>Request body for OfferingsFilteredbyVID (legacy VendorIDVM). Property casing preserved.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Position.DeletePositionDto">
+            <summary>Request body for DeletePosition (legacy DeletePos).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Position.PositionListParamDto">
+            <summary>Request for the CMS paged Position list (adjustment-pass-2 server-side pagination —
+            mirrors VendorListParamV2Dto's shape: SearchParam/Page/PageSize/SortBy).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Position.PositionPagedModelVmDto">
+            <summary>Paged wrapper for the CMS Position list — mirrors VendorPagedModelVmDto's single-element
+            wrapper wire shape (see VendorService.GetVendorListCmsAsync).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Position.PositionListItemDto">
+            <summary>Row shape for PositionList (legacy PositionModel select projection).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Position.SavePositionRequestDto">
+            <summary>Request body for SavePosition (legacy PositionModelParameter).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.DeletePrivDto">
+            <summary>Request body for DeletePrivilege (legacy DeletePriv).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivIdDto">
+            <summary>Request body for PrivilegeMembershipList (legacy privID).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivilegeFidVm">
+            <summary>Mirrors the legacy PrivilegeFIDVM — single-item response for GetPrivilegeByPID.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivilegeIdDto">
+            <summary>Request body for GetPrivilegeByPID (legacy PrivilegeIDVM).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivilegeListParamDto">
+            <summary>Request for the CMS-paged PrivilegeList — mirrors the Vendor pattern
+            (VendorListParamV2Dto) for server-side pagination/search/sort.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivilegePagedVmDto">
+            <summary>Paged wrapper for the CMS PrivilegeList response — mirrors VendorPagedModelVmDto.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivilegeUserVm">
+            <summary>
+            Mirrors the legacy PrivilegeUserVM exactly (field names/casing preserved). Declared as a
+            record (rather than a plain class, unlike most other DTOs in this slice) purely so that
+            PrivilegeByUserAndBType's `.Distinct()` gets real structural equality: the original executed
+            that query via EF Core, which translates `.Distinct()` into a SQL-level DISTINCT; a plain class
+            would fall back to reference equality in-memory and silently stop de-duplicating.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivilegeVm">
+            <summary>
+            Mirrors the legacy PrivilegeVM exactly (field names/casing preserved). Used both as the
+            PrivilegeList read projection and as the SavePrivilege insert/update request payload.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivMemDto">
+            <summary>Mirrors the legacy PrivMem — bulk request item for SavePrivilegeList.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.PrivMemListItemVm">
+            <summary>Mirrors the legacy PrivMemListItem — read-projection item for PrivilegeMembershipList.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.RegisterStatsDto">
+            <summary>Generic status-message response (legacy Registerstats).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Privilege.UserIdDto">
+            <summary>Mirrors the legacy UserIDVM — request body shared by PrivilegeCardbyUser,
+            PrivilegeByUserAndBType and PrivilegeFilterIsVIP.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Registration.ChangePasswordDto">
+            <summary>Request body for ApiRegisterController.ChangePassword (legacy ChangePW).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Registration.FinalUserRegistration2Dto">
+            <summary>Request body for FinalUserRegistration2 (legacy CMS.Models.UsersModel — the EF-generated
+            entity class was reused directly as a request DTO in the original controller).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Registration.RegisterStatsDto">
+            <summary>Generic status-message response (legacy Registerstats).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Registration.UserRegistrationDto">
+            <summary>
+            Request body shape shared by FinalUserRegistration, Import and UpdateUserInfo (legacy
+            CMS.Models.UserModel). Kept as one DTO across the Registration/User slice since all three
+            legacy actions bound to the exact same request class.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Registration.VerifyOtpRequestDto">
+            <summary>Request body for VerifyOTP (legacy RegistrationOTPModel bound directly as a request DTO;
+            only Email/OTP are read by the action).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportCountRowDto">
+            <summary>Legacy SupportModel (GetSupportCountList response row).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.UserFilterDateRangeDto">
+            <summary>Shared date-range + day-bucket request shape (legacy UserFilterDateRange).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Support.UserFilterDateRangeDto.corporateId">
+            <summary>Optional corporate scope for the "most clicked" highlights. null = global (Admin
+            Dashboard, unchanged); set = restrict view/click events to members of that corporate
+            (Corporate Dashboard auto-scopes to the logged-in corporate).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.UserFilterCatDayDto">
+            <summary>Legacy UserFilterCatday — same as UserFilterDateRangeDto plus a business-type category filter.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.CallToActionsDto">
+            <summary>Legacy CallToActionsModel.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.ClickCountDto">
+            <summary>Legacy ClicCountModel (class name typo preserved only at the legacy level; DTO named cleanly).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.UserTotalCountDto">
+            <summary>Legacy Usertotalcount — used both for GetCountAllUserlist (only Count set) and
+            PostNewRegistered (all fields set, one row per date bucket).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportDetailRequestDto">
+            <summary>Request body for GetSupportDetailsList (legacy SupportDetailModelRequest).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportDetailDto">
+            <summary>Legacy SupportDetailModel (INNER JOIN Support+User+Status projection).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportStatusUpdateDto">
+            <summary>Request body for updateSupportStatus (legacy SuportStatus — typo preserved at legacy level only).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportOperationResultDto">
+            <summary>Legacy FamilyMemberStatus reused as the update-status response shape.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportUpdateEmailRequestDto">
+            <summary>Request body for EmailSupportUpdate (legacy SupportUpdateEmailRequest).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportCountDto">
+            <summary>Legacy SupportCountModel (GetSupportCount response row).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.SupportCountRequestDto">
+            <summary>Request body for updateSupportCount (legacy SupportCountRequest).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.DashboardExportRequestDto">
+            <summary>Request body for the dashboard global-export endpoint (DownloadDashboard). Carries each
+            section's current filter so the server refetches fresh data per section, same as every other
+            export endpoint.</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Support.DashboardExportRequestDto.TotalUser">
+            <summary>Drives New Users / New User % (Total Active Users and Support Pending are unfiltered totals).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Support.DashboardExportRequestDto.Cards">
+            <summary>Module key ("restaurant"/"hotel"/"store"/"wellness"/"offer") -> that card's current filter.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Support.MostClickItemDto">
+            <summary>Legacy MostClickRestoModel / MostClickStoreModel / MostClickHospitalityModel /
+            GenericMostClickModel — all four legacy classes are structurally identical, so a single DTO backs
+            BuildMostClickList for every category.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.AuditTrailDto">
+            <summary>Request body for AudtiTrails (action name/typo preserved from the legacy route) and the
+            per-row shape used by Upload. Mirrors the legacy AuditTrailModel.</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.UserAccess.AuditTrailDto.DateCreated">
+            <summary>Ignored on input for AudtiTrails — the original always overwrites this with
+            DateTime.Now regardless of what the client sends. Only used (parsed from the sheet) by Upload.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.ExpiryResDto">
+            <summary>Mirrors the legacy ExpiryRes.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.JwtModelDto">
+            <summary>Mirrors the legacy JWTModel — request body for UserInfoFilteredbyJWToken. Unrelated to
+            bearer-JWT auth; "Key" is the value stored in User.Jwtoken.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.JWTokenModelDto">
+            <summary>Mirrors the legacy JWTokenModel — reused by SaveJWToken, GetKeyExpiry and DeleteToken. The
+            "Email" property is overloaded: SaveJWToken passes a real email address, while GetKeyExpiry/DeleteToken
+            pass the previously-issued base64 pseudo-token value (matching the original's own reuse of this class).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.QrLogsModelDto">
+            <summary>Mirrors the legacy QrLogsModel — request body for both QrCodeLogs and QrSendEmail.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.StatusResultDto">
+            <summary>Mirrors the legacy StatusResult.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.SupportModelDto">
+            <summary>Mirrors the legacy SupportModel (request body for TrailSupport). Note the original never reads
+            data.Status when inserting the Support row — it hardcodes Status = 14 instead — so this field is kept
+            only for wire-shape parity and is otherwise unused.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.TokenLookupOutcome">
+            <summary>Shared 3-way outcome for GetKeyExpiry/DeleteToken: both originals distinguish a matching-token
+            found (200 + body), a not-found lookup (bare BadRequest() with NO body), and an exception (400 + body)
+            as three distinct response shapes. Preserved exactly rather than collapsed to a simple bool.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.UserAccess.UserDetailsVmDto">
+            <summary>Mirrors the legacy UserDetailsVM returned by UserInfoFilteredbyJWToken. All properties default
+            to null/0 — the original returns this "empty" object (never NotFound) when the token doesn't match any
+            user, or when the matched user has no Corporate row.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.CoporateVipDto">
+            <summary>Request body for EmailRemainingVIP (legacy CoporateVIP — legacy class name typo preserved
+            only in the doc comment; the C# type name here is spelled correctly).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.CorporateAdminUserFilterByIdDto">
+            <summary>Request body for CorporateAdminUserFilterById (legacy CorporateModelId).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.DeleteUserDto">
+            <summary>Request body for DeleteUserInfo (legacy DeleteUser).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.SendRegistrationEmailRequestDto">
+            <summary>Request body for ApiRegisterController.SendRegistrationEmail. Accepts one or many user ids so
+            the CMS can send a single invite or a bulk-selected batch from the same endpoint.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UpdateProfileImgDto">
+            <summary>Request body for UpdateProfileImg (legacy ProfileImge).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UpdateUserInformationDto">
+            <summary>Request body for UpdateUserInformation (legacy UpdatePassword — the legacy class name is
+            misleading; it carries no password field and is used only to update profile fields).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UserFilterRequestDto">
+            <summary>Request body shared by DisplayRegistrationListv2 and Corporatelist (legacy paginateCorpUserv2).
+            "page" is present for request-contract parity but is unused by either original action.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UserIdDto">
+            <summary>Request body for UpdateUserStatus (legacy UserID).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UserListItemDto">
+            <summary>Row shape shared by UserList/DisplayRegistrationListv2/Corporatelist/CorporateAdminUserFilterById/
+            AdminList (legacy UserListPaginationVM), built by an in-memory LEFT JOIN across User, Corporate,
+            Position, UserType and Status.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UserListPagedDto">
+            <summary>Paged user list response (legacy UserListPagedModelVM). "items" casing preserved.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.User.UserListRequestDto">
+            <summary>Request body for UserList (legacy paginateCorpUserv3 : PagionationParameter). The base
+            class's "search" field is unused by the original buildUserList and is intentionally omitted here.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.BTVendorIdRequest">
+            <summary>Request for VendorBtypeFilterbYId — mirrors the original's BTVendorIdParam.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorBusinessTypeDto">
+            <summary>Response row — mirrors tbl_VendorBusinessTypeModel's shape exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.DeleteVendorRequest">
+            <summary>Request for DeleteVendor — mirrors the original's DeleteVen.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.RegisterStatsDto">
+            <summary>Mirrors the original's Registerstats.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.DiscoverV2Dto">
+            <summary>Request for DiscoverFilterbyBtypeAndBIDV2 — mirrors the original's DiscoverV2.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.DiscoverDto">
+            <summary>Request for DiscoverFilterbyBtype — mirrors the original's Discover.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.DiscoverDetailsDto">
+            <summary>
+            Mirrors the original's DiscoverDetails. A record so that .Distinct() (used to reproduce the
+            original's SQL SELECT DISTINCT) compares by value instead of by reference.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorImportItemDto">
+            <summary>One row accepted by Import — mirrors the writable columns of the legacy tbl_VendorModel.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorBusinessTypeInputDto">
+            <summary>Nested VendorBT entry accepted by SaveVendorV2 — mirrors the original's VendorBusinessTypeModel binding.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorModelVMV2Dto">
+            <summary>Request for SaveVendorV2 — mirrors the original's VendorModelVMV2.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.SaveVendorResultDto">
+            <summary>Outcome of SaveVendorAsync; the controller maps Success to Ok(Message)/BadRequest(Message).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.BtypeIdV2Dto">
+            <summary>
+            Request for VendorListFilterByBtypeIdV2 / VendorListFilterByBtypeId — mirrors the original's
+            btypeIdV2 (both actions bind to and share this exact same request shape in the legacy app).
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorDetailWithCountryDto">
+            <summary>
+            Mirrors the original's VendorDetailWithCountry. A record so that .Distinct() (used to
+            reproduce the original's SQL SELECT DISTINCT) compares by value instead of by reference.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorIdVmRequest">
+            <summary>Request for VendorListFilterByVID — mirrors the original's VendorIDVM.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorDetail3Dto">
+            <summary>Response for VendorListFilterByVID — mirrors the original's VendorDetail3.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorGalleryRequest">
+            <summary>Request for VendorGallery — mirrors the original ApiVendorController's Bid class.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorGalleryItemDto">
+            <summary>One split gallery-image entry — mirrors the original's BusinessArray shape.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorIdRequest">
+            <summary>Request for VendorFilterbYId — mirrors the original's VendorIdModel (Id is a string).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorListBTypeParamDto">
+            <summary>One business-type-id filter row — mirrors the original's VendorListBTypeParam.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorListParamV2Dto">
+            <summary>Request for VendorListCMS — mirrors the original's VendorListParamV2.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorBusinessTypeVmDto">
+            <summary>Nested vendor-business-type row embedded in a CMS listing item — mirrors VendorBusinessTypeModelVM.</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorModelVmDto">
+            <summary>
+            CMS listing row — mirrors the original's VendorModelVM. DateCreated is DateOnly? here (rather
+            than DateTime?) because the underlying Vendor.DateCreated entity property was changed to
+            DateOnly for this rewrite; see the Vendor entity for details.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorPagedModelVmDto">
+            <summary>Mirrors the original's VendorPagedModelVM (a paged wrapper, one element per response).</summary>
+        </member>
+        <member name="T:AOPC.Application.DTOs.Vendor.VendorVmDto">
+            <summary>
+            Response shape for VendorList / VendorFilterbYId. Mirrors the original's VendorVM view model
+            field-for-field (including fields GetBuilVendorList never populated, which always serialized
+            as null/default there too) so existing consumers see an identical JSON shape.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.Services.AdminAccessService">
+             <summary>Ports AuthSystem.Data.Controller.ApiAdminAcessController.FinalUserRegistration.
+            
+             SMS-OTP note: unlike the near-identical FinalUserRegistration action in ApiRegisterController (ported by
+             a sibling agent), the SMS-send in THIS controller's original was already dead code in production — the
+             SmsCountry URL was built but the HttpWebRequest/HttpWebResponse calls that would actually send it were
+             commented out. That (likely accidental) discrepancy is preserved here exactly: ISmsService is
+             intentionally NOT called from this service, so no SMS is sent, matching current production behavior.
+            
+             Password: MODERNIZED to IPasswordHasher.Hash instead of Cryptography.Encrypt.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.AuditHistoryLogger">
+            <summary>Writes an explicit change-history record to the generic AuditLog table (the one the CMS
+            per-entity "History" modals read via AuditHistoryService). Used by the relationship/matrix save
+            screens — Corporate Privilege Settings, Privilege Vendor Selection, Membership Privileges Selection —
+            whose changes touch join tables (CorporatePrivilegeTier/VendorPrivilegeTier/MembershipPrivilege) that
+            don't surface under the parent entity's History. Logging a summary row under the PARENT entity
+            (Corporate/Privilege/Membership) makes those changes visible in the existing History view.
+            Caller is responsible for the repo's SaveChangesAsync.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuditHistoryLogger.LogAsync(AOPC.Application.Common.Interfaces.IRepository{AOPC.Domain.Entities.AuditLog},System.String,System.String,System.String,System.String,System.Object,System.Object,System.Threading.CancellationToken)">
+            <summary>Overload that records both an OldValues and a NewValues payload so the History diff
+            renders proper Old → New columns (used by the matrix screens to show per-privilege/per-vendor
+            enabled↔disabled and IsVIP transitions).</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.AuditHistoryService">
+            <summary>Ports AuthSystem.Data.Controller.ApiAuditHistoryController. Unlike the rest of the legacy
+            controllers, this one already queried the generic AuditLog/LoginAttempt tables directly and returned
+            anonymous-object JSON shapes; here those are given named DTOs but the wire shape is unchanged.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.AuditTrailLogger">
+            <summary>Shared helper for writing to the legacy tbl_audittrail table (the one /audit-trail
+            actually reads — see AuditTrailService), matching the call pattern UserService.SaveUserInfoAsync
+            already uses. Caller is still responsible for the repo's SaveChangesAsync.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.AuditTrailService">
+            <summary>Ports AuthSystem.Data.Controller.ApiAuditTrailController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuditTrailService.BuildAuditTrailListAsync(AOPC.Application.DTOs.AuditTrail.AuditTrailListRequestDto,System.Threading.CancellationToken)">
+            <summary>Ports the private buildAuditTrailList(searchFilter) helper.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuditTrailService.BuildQrTrailListAsync(AOPC.Application.DTOs.AuditTrail.QrTrailListRequestDto,System.Threading.CancellationToken)">
+            <summary>Ports the private buildQRTrailList(searchFilter) helper.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.AuthService">
+            <summary>Ports AuthSystem.Data.Controller.ApiLogInController.LogIn, modernized:
+            - Password verification now goes through IPasswordHasher.Verify (BCrypt-first, legacy-AES-fallback)
+              instead of the original's Cryptography.Encrypt(...)/Decrypt(...) direct comparison.
+            - Token issuance now goes through IJwtTokenGenerator (real signed JWT access + refresh tokens) instead
+              of the original's "random string -> legacy-encrypt -> strip punctuation -> take last 15 chars"
+              pseudo-token.
+            - HttpContext.Session reads/writes for BTCorporateId/BTUserType are dropped entirely — the API is now
+              stateless; corporateId/role are returned in the response body instead.
+            - Adds RefreshAsync, a genuinely new flow (the original only had dead-code stubs for this, never wired
+              up to a real RefreshToken model).
+            Rate limiting and account lockout are preserved with identical parameters/order of checks.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuthService.VerifyLoginOtpAsync(AOPC.Application.DTOs.Auth.VerifyLoginOtpRequestDto,System.String,System.Threading.CancellationToken)">
+            <summary>New flow — confirms the code LoginAsync emailed and, only on success, issues the JWT
+            access/refresh tokens that LoginAsync itself withheld. Membership-expiry check is the original
+            LoginAsync quirk (dayDifference == 0 only), relocated here so it still gates before a token is
+            handed out, just after OTP confirmation instead of before.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuthService.BuildOtpEmailHtmlBody(System.String,System.String)">
+            <summary>Styling matches the other branded emails in this codebase (see
+            UserService.BuildWelcomeEmailHtmlBody / CorporateListingService.RegistrationInviteHtmlBody) — same
+            dark cover-pattern background, white rounded card, centered AOPC logo. The code itself is rendered
+            large and letter-spaced in its own box so it's unambiguous to read/type on a phone screen.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuthService.RefreshAsync(AOPC.Application.DTOs.Auth.RefreshRequestDto,System.Threading.CancellationToken)">
+            <summary>New flow — the original never implemented a working refresh endpoint (only dead-code stubs
+            referencing a RefreshToken model that was never wired up). Rotates the refresh token on every call
+            (issues a new one alongside the new access token) rather than reusing the presented one.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.BusinessLocationService">
+            <summary>Ports AuthSystem.Data.Controller.ApiBusinessLocController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessLocationService.GetBusinessLocationListCmsAsync(AOPC.Application.DTOs.Catalog.BusinessLocationListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Business Location list (adjustment pass 2). Reuses the same
+            query as <see cref="M:AOPC.Application.Services.BusinessLocationService.GetBusinessLocationListAsync(System.Threading.CancellationToken)"/> then applies in-memory search/sort/paging, mirroring
+            VendorService.GetVendorListCmsAsync's pattern.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessLocationService.ParseLocationId(System.String)">
+            <summary>Original used int.Parse(v.BusinessLocationID ?? "0"), which throws on malformed data;
+            TryParse avoids that crash for the equivalent "doesn't match" outcome.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.BusinessService">
+            <summary>Ports AuthSystem.Data.Controller.ApiBusinessController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessService.FormatGalleryForCard(System.String)">
+            <summary>
+            Mirrors the original's (slightly odd) gallery formatting for GetBusinessFByBID: when non-empty, it
+            strips the leading character and collapses doubled separators. Kept verbatim as a business rule.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessService.BuildBusinessListAsync(System.Threading.CancellationToken)">
+            <summary>Ports the private buildBusiness() helper: active businesses inner-joined to their type,
+            left-joined to location and status.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessService.GetBusinessListCmsAsync(AOPC.Application.DTOs.Catalog.BusinessListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Business (Hotels) list (adjustment pass 2). Reuses the same
+            query as <see cref="M:AOPC.Application.Services.BusinessService.GetBusinessListAsync(System.Threading.CancellationToken)"/> then applies in-memory search/sort/paging, mirroring
+            VendorService.GetVendorListCmsAsync's pattern.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.BusinessTypeService">
+            <summary>Ports AuthSystem.Data.Controller.ApiBusinessTypeController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessTypeService.BuildBusinessTypeListAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Ports the private buildBusinessType(filterByCorporate) helper.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.BusinessTypeService.GetBusinessTypeListV2PagedAsync(AOPC.Application.DTOs.Catalog.BusinessTypeCmsListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Business Type list (adjustment pass 2). Reuses the same
+            query as <see cref="M:AOPC.Application.Services.BusinessTypeService.GetBusinessTypeListV2Async(System.Threading.CancellationToken)"/> then applies in-memory search/sort/paging, mirroring
+            VendorService.GetVendorListCmsAsync's pattern.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.CorporateListingService">
+            <summary>Ports AuthSystem/API.Data.Controller.ApiCorporateListingController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateListingService.GetAllUserCountAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Ports GetAllUserCount. Note: like the original, this does an unguarded lookup of the
+            corporate by id — if corporateId doesn't match any Corporate row, this throws (matching the legacy
+            controller's identical unguarded `corporateVIPCount.VipCount` null-dereference; there is no try/catch
+            around this action in either version).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateListingService.GetUnregisteredListAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Ports UnregisteredList. corporateId == 0 means "all corporates" (no filter applied).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateListingService.EmailUnregisterUserAsync(AOPC.Application.DTOs.Corporate.UnregisteredUserEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>Ports EmailUnregisterUser. Sets Active = 9 for each requested user id, then emails every
+            recipient. The original sends ONE message with multiple To: recipients via MailKit; the shared
+            IEmailService is single-recipient, so this loops and sends one email per recipient with the same
+            subject/HTML body — functionally equivalent (everyone still gets the email), just not batched into a
+            single SMTP envelope. Flagged per instructions.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateListingService.GetCorporateUserCountAllAsync(System.Threading.CancellationToken)">
+            <summary>Ports CorporateUserCountAll.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.CorporatePrivilegeService">
+            <summary>Ports AuthSystem.Data.Controller.ApiCorporatePrivilegeController. Note: no stored procedures are
+            used here — the one SP reference in the original (Corporate_SP, in CorporatePrivilegeLsit) lives inside
+            a dead "#region To check if still using" block and was not ported.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporatePrivilegeService.GetPrivilegeCorporateListAsync(AOPC.Application.DTOs.Corporate.PrivilegeCorporateIdsRequest,System.Threading.CancellationToken)">
+            <summary>Ports PrivilegeCorporateList. The original has NO try/catch, so an invalid (non-numeric)
+            Id/Memid throws unhandled (500) — preserved exactly, no defensive try/catch added here either.
+            Note: data.Id is used BOTH as the Corporate id (parsed to int for lookups) AND echoed back verbatim
+            as the CorporateId string on every result row — preserved exactly, matching the original's dual use
+            of this field.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporatePrivilegeService.SaveCorporatePrivilegeListAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Corporate.PrivCorpDto},System.Threading.CancellationToken)">
+            <summary>Ports SaveCorporatePrivilegeList. Deletes all CorporatePrivilegeTier rows for the FIRST
+            item's CorporateId only (not every distinct corporate id present in the list — preserved exactly),
+            then per row, re-checks existence (a CorporatePrivilegeTier + Privilege inner-join match for that
+            row's own PrivilegeId/CorporateId) against the CURRENT state — which grows as earlier rows in this
+            same batch are inserted — before inserting rows where Stats == "1".</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.CorporateService">
+            <summary>Ports AuthSystem.Data.Controller.ApiCorporateController.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.GetCompanyListAsync(System.Threading.CancellationToken)">
+            <summary>Ports the private buildCompanyList() helper + CompanyList action. The original expresses
+            this as a LEFT JOIN Membership -&gt; Corporate -&gt; Status filtered to Corporate.Status == 1; since
+            every active Corporate has exactly one MembershipId, this is re-expressed as a Corporate-driven
+            dictionary lookup with identical output — it also sidesteps the LINQ-to-Objects null-ref pitfall of a
+            literal left-join translation (accessing members of a DefaultIfEmpty() row before checking for null).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.GetCompanyListCmsAsync(AOPC.Application.DTOs.Corporate.CorporateListParamDto,System.Threading.CancellationToken)">
+            <summary>Paged, searchable, sortable CMS Corporate list (adjustment pass 2). Reuses the same query
+            as <see cref="M:AOPC.Application.Services.CorporateService.GetCompanyListAsync(System.Threading.CancellationToken)"/> then applies in-memory search/sort/paging, mirroring
+            VendorService.GetVendorListCmsAsync's pattern.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.GetMembershipByCorporateIdAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Ports MembershipCorporate's inner join (Corporate x Membership on MembershipId). Returns
+            null if the corporate doesn't exist or its MembershipId doesn't match any Membership row — the
+            controller maps null-or-empty-Id input to BadRequest("ERROR") before calling this.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.SaveCorporateAsync(AOPC.Application.DTOs.Corporate.CorporateModelDto,System.Threading.CancellationToken)">
+            <summary>Ports the active (validated) UpdateCorporate overload — the commented-out older overload in
+            the original file is dead code and was not ported.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.DeleteCorporateAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>Ports DeleteCorproate (action name preserved verbatim from the legacy route, including the
+            typo).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.ImportCorporateAsync(System.Collections.Generic.List{AOPC.Application.DTOs.Corporate.CorporateModelDto},System.Threading.CancellationToken)">
+            <summary>Ports ImportCorporate. Note the original quirk: the method's local "Registered Successfully"
+            variable is computed but never returned — the response is always the LAST processed row's status
+            message ("Successfully Saved." / "Duplicate Entry."), or the exception text if one was thrown mid-loop
+            — not an overall summary. Preserved exactly.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.CorporateService.RebuildCorporatePrivilegeTiersAsync(System.Int32,System.Nullable{System.Int32},System.Threading.CancellationToken)">
+            <summary>Ports the delete-then-rebuild CorporatePrivilegeTier logic shared by UpdateCorporate's
+            insert/update paths and ImportCorporate: deletes every existing tier row for the corporate, then
+            copies every MembershipPrivilege row for the target membership into a new CorporatePrivilegeTier row
+            (Count/VipCount converted from int? to string, matching the original's ToString() conversion).</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.FamilyMemberService">
+            <summary>Ports the family member CRUD actions of ApiRegisterController (AOPC-APIV3-Source-Code).
+            The original's "Entity set '_context.tbl_FamilyMember' is null!" Problem-response branches guard
+            against a null EF DbSet — meaningless under the repository pattern (an injected
+            IRepository&lt;FamilyMember&gt; is never null), so those branches are dropped here; every other
+            behavior is preserved exactly.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.MembershipService">
+            <summary>
+            Ported from ApiMembershipController (AOPC-APIV3-Source-Code). Joins are done in-memory over
+            repository-fetched lists (LINQ-to-Objects) since Application code cannot reference EF Core.
+            Several LEFT JOINs in the original relied on EF Core's SQL-translation null-tolerance (a
+            dereference of a left-joined navigation that would NRE if it were a real in-memory object);
+            those are ported here with explicit null-conditional access instead of blindly reproducing a
+            crash that only "worked" because EF never actually materialized a null object for it. Genuine,
+            already-observable bugs in the original (ones that would already crash/misbehave in production
+            today) are preserved as-is and flagged in the wave report.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Services.MembershipService.NormalizeToIsoDate(System.String)">
+            <summary>Converts a display date (MM/dd/yyyy or already-ISO) to yyyy-MM-dd for &lt;input type="date"&gt;.
+            Returns the original string unchanged if it can't be parsed (e.g. empty).</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.NotificationService">
+            <summary>
+            Ports AuthSystem.Data.Controller.ApiNotifcationController (typo preserved at the controller level).
+            Joins are done in-memory over repository-fetched lists (LINQ-to-Objects) since Application code
+            cannot reference EF Core.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.InsertNotificationsAsync(AOPC.Application.DTOs.Notification.NotificationInsertDto,System.Threading.CancellationToken)">
+            <summary>Ports InsertNotifications. NOTE (flagged): the per-user "existence check" below tests
+            whether the CURRENT user (already enumerated from the very same active-users list) is present in
+            that same list — this is always true by construction, so the `else` branch that returns a failure
+            result is dead code in practice. Preserved verbatim rather than simplified, per instructions.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.GetNotificationsByEmployeeIdAsync(AOPC.Application.DTOs.Notification.NotifIdDto,System.Threading.CancellationToken)">
+            <summary>Ports GetNotifEmpId. DateOnly conversion note: the original compares
+            `n.DateCreated.Date == today`/`yesterday` and a `start`/`end` DateTime range; since Notification's
+            DateCreated is now DateOnly, those comparisons use DateOnly.FromDateTime(...) equivalents.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.MarkAllReadAsync(AOPC.Application.DTOs.Notification.NotifIdDto,System.Threading.CancellationToken)">
+            <summary>Ports MarkReadAll_Notification. Success == false ("nothing to mark") maps to the original's
+            BadRequest-for-no-op response (preserved even though Ok would be more conventional).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.MarkOneReadAsync(AOPC.Application.DTOs.Notification.NotifIdUpdateDto,System.Threading.CancellationToken)">
+            <summary>Ports UpdateNotification. Same BadRequest-for-no-op pattern as MarkAllReadAsync.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.BuildNotificationListAsync(AOPC.Application.DTOs.Notification.NotificationSearchFilterDto,System.Threading.CancellationToken)">
+            <summary>Ports BuildNotificationList. NOTE (flagged, intentional per instructions): this collapses
+            all notifications down to distinct (Details, Module, ItemId, DateCreated) combinations across ALL
+            employees — Id/EmployeeId/IsRead/EmailStatus are deliberately discarded, matching the original's
+            CMS "what was broadcast" view.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.GetNotificationListV2Async(AOPC.Application.DTOs.Notification.NotificationSearchFilterDto,System.Threading.CancellationToken)">
+            <summary>Ports NotificationListV2 (CMS paged list).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.NotificationService.SendNotificationPerUserCorporateAsync(AOPC.Application.DTOs.Notification.CorporateNotificationEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>Ports SendNotificationPerUserCorporate.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.OfferingService">
+            <summary>
+            Ported from ApiOfferingController (AOPC-APIV3-Source-Code). Joins are done in-memory over
+            repository-fetched lists (LINQ-to-Objects) since Application code cannot reference EF Core;
+            null-safety on LEFT JOIN results is therefore explicit (null-conditional access) where the
+            original relied on SQL Server's NULL-column semantics for the same join shape.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.Services.PositionService">
+            <summary>Ports the position CRUD actions of ApiRegisterController (AOPC-APIV3-Source-Code).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.PositionService.GetPositionListCmsAsync(AOPC.Application.DTOs.Position.PositionListParamDto,System.Threading.CancellationToken)">
+            <summary>Adjustment-pass-2: search/sort/page over the same active-position set as
+            GetPositionListAsync, wrapped as a single-element paged-result list (mirrors
+            VendorService.GetVendorListCmsAsync).</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.PrivilegeService">
+            <summary>
+            Ported from ApiPrivilegeController (AOPC-APIV3-Source-Code). Joins are done in-memory over
+            repository-fetched lists (LINQ-to-Objects) since Application code cannot reference EF Core.
+            Where the original chained a LEFT-JOINed (possibly-null) entity straight into a further
+            property access inside the same IQueryable pipeline — safe under EF's SQL translation but an
+            immediate NullReferenceException if replayed against real in-memory objects — this port uses
+            explicit null-conditional access instead. Genuine, already-observable bugs in the original
+            (behavior that would already misbehave/crash in production today) are preserved as-is and
+            flagged in the wave report; two are called out explicitly per the task brief:
+              (1) SavePrivilegeAsync's duplicate-title check is global, not scoped to Active privileges.
+              (2) GetPrivilegeByUserAndBTypeAsync joins Vendor.BusinessLocationId against Business.Id
+                  (should be BusinessLocation.Id) — a pre-existing bug, preserved verbatim.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.Services.RegistrationService">
+            <summary>
+            Ports the registration/OTP flows of AuthSystem.Data.Controller.ApiRegisterController
+            (AOPC-APIV3-Source-Code). Every Cryptography.Encrypt(password) call in the original is replaced
+            with IPasswordHasher.Hash(...) — a deliberate modernization (BCrypt hashing instead of reversible
+            AES encryption for stored passwords), not a preserve-the-bug case, since none of these endpoints
+            ever need to decrypt a password they wrote.
+            </summary>
+        </member>
+        <member name="T:AOPC.Application.Services.SupportService">
+            <summary>
+            Ports AuthSystem.Data.Controller.ApiSupportController. Joins are done in-memory over
+            repository-fetched lists (LINQ-to-Objects) since Application code cannot reference EF Core;
+            LEFT JOINs use GroupJoin + DefaultIfEmpty() with explicit null-safe (`?.`) member access where the
+            original relied on SQL Server's NULL-column semantics for the same join shape. All magic-number
+            status literals (14, 5, 1, 15, etc.) are preserved verbatim from the original — this controller never
+            used named constants/enums for them.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Services.SupportService.ResolveDateRange(System.String,System.String,System.Int32)">
+            <summary>Date-range resolution pattern used by PostCallToActionsList / GetClickCountsListAll /
+            PostNewRegistered: explicit start/end win when BOTH are non-empty strings; otherwise fall back to
+            the day-bucket switch (7/15/30/default-1-year).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.SupportService.ResolveDateRangeDayZeroFirst(System.String,System.String,System.Int32)">
+            <summary>Date-range resolution pattern used by BuildMostClickList — NOTE (flagged): this checks
+            `day == 0` to mean "use explicit dates", which is the INVERTED condition compared to
+            <see cref="M:AOPC.Application.Services.SupportService.ResolveDateRange(System.String,System.String,System.Int32)"/>'s `!string.IsNullOrEmpty(startdate)` check. Preserved exactly as an
+            inconsistency that already existed in the original across different endpoints in the same file.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.SupportService.SendSupportUpdateEmailAsync(AOPC.Application.DTOs.Support.SupportUpdateEmailRequestDto,System.Threading.CancellationToken)">
+            <summary>Ports EmailSupportUpdate. Single-recipient send — the original is already
+            single-recipient (unlike some other legacy controllers that loop), so no adaptation needed here.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.SupportService.GetSupportCountAsync(System.Threading.CancellationToken)">
+            <summary>Ports GetSupportCount. NOTE (flagged): preserves the original's non-defensive
+            `.FirstOrDefault()` usage against tbl_TotalSupportCount with NO null-check before accessing
+            `.Count` — if that table is ever empty this throws a NullReferenceException, exactly like the
+            original. Not guarded, per instructions.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.SupportService.UpdateSupportCountAsync(AOPC.Application.DTOs.Support.SupportCountRequestDto,System.Threading.CancellationToken)">
+            <summary>Ports updateSupportCount. Same non-defensive no-null-check quirk as GetSupportCountAsync
+            — preserved verbatim.</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:AOPC.Application.Services.SupportService.BuildMostClickListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.String,System.Threading.CancellationToken)" -->
+        <member name="M:AOPC.Application.Services.SupportService.GetMostClickHealthListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Note (flagged): literal lowercase "news" preserved exactly, despite the legacy method name
+            (PostMostClickHealthList) suggesting "Health"/"News" — matching an actual Module value.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.UserAccessService">
+            <summary>Ports AuthSystem.Data.Controller.ApiUserAcessController's business logic (the 9 active
+            endpoints only). Note on email "From" display name: the shared IEmailService always sends from the
+            single configured EmailSettings.DisplayName/User — the original varied its MailboxAddress From-name
+            per action ("AOPC Registration" for SaveJWToken vs "ALFARDAN OYSTER PRIVILEGE CLUB" for
+            TrailSupport/QrSendEmail). That per-action From-name distinction cannot be preserved through the shared
+            interface; flagged as a deviation rather than silently dropped.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.InsertAuditTrailAsync(AOPC.Application.DTOs.UserAccess.AuditTrailDto,System.Threading.CancellationToken)">
+            <summary>Ports AudtiTrails (action name/typo preserved).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.SaveJwTokenAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Ports SaveJWToken.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.SendTrailSupportAsync(AOPC.Application.DTOs.UserAccess.SupportModelDto,System.Threading.CancellationToken)">
+            <summary>Ports TrailSupport.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.GetKeyExpiryAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Ports GetKeyExpiry.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.DeleteTokenAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Ports DeleteToken.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.InsertQrCodeLogAsync(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
+            <summary>Ports QrCodeLogs, which calls QrSendEmail inline in the original (a normal same-controller
+            method call, not an HTTP round-trip) — mirrored here by calling SendQrScanEmailAsync directly.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.SendQrScanEmailAsync(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
+            <summary>Ports QrSendEmail. The original has NO try/catch — preserved: this method does not swallow
+            exceptions either.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.GetUserInfoByJwtokenAsync(System.String,System.Threading.CancellationToken)">
+            <summary>Ports UserInfoFilteredbyJWToken. Sequential null-guarded lookups matching the original's
+            own step-by-step structure. Always returns a (possibly default/empty) VM — never throws for a
+            not-found token or missing corporate.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserAccessService.ImportAuditTrailsFromExcelAsync(System.IO.Stream,System.Threading.CancellationToken)">
+            <summary>Ports the Upload action's parsing logic via IExcelService, keeping this project free of a
+            direct ClosedXML reference. IExcelService.ReadAsync treats row 1 as the header row (skipped) and
+            returns each data row as an ordered Dictionary keyed by header text — since .NET Dictionary
+            preserves insertion order and ExcelService builds it in column order, .Values.ElementAtOrDefault(i)
+            reproduces the original's literal Cell(1)..Cell(8) positional mapping regardless of what the actual
+            header text is.</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.UserService">
+            <summary>
+            Ports the user list/CRUD/status actions of AuthSystem.Data.Controller.ApiRegisterController
+            (AOPC-APIV3-Source-Code). Joins (buildUserList/buildUsersList) are done in-memory over
+            repository-fetched lists since Application code cannot reference EF Core; null-safety on LEFT
+            JOIN results is explicit where the original relied on SQL Server's NULL-column semantics.
+            </summary>
+        </member>
+        <member name="M:AOPC.Application.Services.UserService.BuildWelcomeEmailHtmlBody(System.String)">
+            <summary>Copied styling verbatim from the other welcome/invite emails in this codebase (see
+            CorporateListingService.RegistrationInviteHtmlBody) — kept local since Application code can't share
+            a private const across services cleanly, and the wording here differs slightly (personalized
+            greeting instead of a generic invite blast).</summary>
+        </member>
+        <member name="T:AOPC.Application.Services.VendorService">
+            <summary>
+            Ports ApiVendorController's 13 active endpoints. Multi-entity joins that the original expressed
+            as EF LINQ queries against tbl_VendorModel/tbl_VendorBusinessTypeModel/tbl_BusinessLocationModel/
+            etc. are reproduced here as LINQ-to-Objects joins over lists fetched via <see cref="T:AOPC.Application.Common.Interfaces.IRepository`1"/>,
+            since Application code must not reference AopcDbContext or EF Core directly.
+            </summary>
+        </member>
+    </members>
+</doc>

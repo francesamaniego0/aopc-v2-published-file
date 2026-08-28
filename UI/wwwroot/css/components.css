@@ -1,0 +1,436 @@
+/* Global item b: themed tooltip used by Tip.razor. CSS-driven (no JS) via the data-tip attribute. */
+.aopc-tip {
+  position: relative;
+  display: inline-flex;
+}
+.aopc-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  z-index: 30;
+  padding: 5px 9px;
+  border-radius: var(--radius-sm);
+  background: #262626;
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  box-shadow: var(--shadow-md);
+}
+.aopc-tip:hover::after,
+.aopc-tip:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+.aopc-tip-top::after { bottom: calc(100% + 6px); left: 50%; transform: translate(-50%, 2px); }
+.aopc-tip-top:hover::after, .aopc-tip-top:focus-visible::after { transform: translate(-50%, 0); }
+.aopc-tip-bottom::after { top: calc(100% + 6px); left: 50%; transform: translate(-50%, -2px); }
+.aopc-tip-bottom:hover::after, .aopc-tip-bottom:focus-visible::after { transform: translate(-50%, 0); }
+.aopc-tip-left::after { right: calc(100% + 6px); top: 50%; transform: translate(2px, -50%); }
+.aopc-tip-left:hover::after, .aopc-tip-left:focus-visible::after { transform: translate(0, -50%); }
+.aopc-tip-right::after { left: calc(100% + 6px); top: 50%; transform: translate(-2px, -50%); }
+.aopc-tip-right:hover::after, .aopc-tip-right:focus-visible::after { transform: translate(0, -50%); }
+
+/* Global item i: DataGrid record-count badge + sortable column headers. */
+.datagrid-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(200, 147, 40, 0.12);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+.datagrid-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.datagrid-table th.sortable i { margin-left: 6px; opacity: 0.6; font-size: 11px; }
+.datagrid-table th.sortable:hover { color: var(--accent); }
+.datagrid-table th.sortable:hover i { opacity: 1; }
+
+/* Global item j: skeleton loading rows/bars (shimmer). */
+.skeleton-bar {
+  display: block;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--secondary-light) 25%, rgba(200, 200, 200, 0.35) 50%, var(--secondary-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.datagrid-skeleton-row td { padding: 10px 12px; }
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* SkeletonLoader shared component variants (card / stat / lines) — reuse the .skeleton-bar shimmer. */
+.skeleton-card {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--secondary-light) 25%, rgba(200, 200, 200, 0.35) 50%, var(--secondary-light) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.skeleton-stat-card {
+  flex: 1 1 140px;
+  min-width: 120px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  border: 1px solid var(--secondary-light);
+}
+.skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Sidebar pending-count badge (Support Logs — live via SignalR). */
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-pill);
+  background: var(--secondary-red);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+/* Collapsed icon-rail: labels (and this badge's sibling <span>) are hidden, so pin the badge as a
+   small dot on the icon itself instead of letting it disappear with the label. */
+.sidebar-collapsed .sidebar .sidenav ul li a { position: relative; }
+.sidebar-collapsed .sidebar-badge {
+  position: absolute;
+  top: 4px;
+  right: 14px;
+  min-width: 8px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  font-size: 0;
+}
+
+/* Profile-style image upload (ProfileImageUpload.razor): large rounded avatar with a pencil
+   "edit" button pinned bottom-right, plus an optional multi-image gallery strip. */
+.profile-upload { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin-bottom: 10px; }
+.profile-upload-main { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.profile-upload-avatar {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  overflow: visible;
+  cursor: pointer;
+  display: block;
+}
+.profile-upload-avatar img,
+.profile-upload-placeholder,
+.profile-upload-spinner {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--secondary-light);
+  color: var(--secondary-dark);
+  font-size: 26px;
+  border: 2px solid var(--secondary-light);
+}
+.profile-upload-avatar.is-busy { pointer-events: none; opacity: 0.7; }
+.profile-upload-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid var(--panel, var(--light));
+}
+.profile-upload-avatar input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.profile-upload-label { font-size: 12px; color: var(--secondary-dark); font-weight: 600; }
+
+.profile-upload-gallery { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 200px; }
+.profile-upload-gallery-title { font-size: 12px; color: var(--secondary-dark); font-weight: 600; }
+.profile-upload-gallery-strip { display: flex; flex-wrap: wrap; gap: 8px; }
+.profile-upload-gallery-thumb { position: relative; width: 60px; height: 60px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--secondary-light); }
+.profile-upload-gallery-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.profile-upload-gallery-remove {
+  position: absolute; top: 1px; right: 1px; width: 18px; height: 18px; border-radius: 50%;
+  border: none; background: rgba(0,0,0,0.6); color: #fff; cursor: pointer; font-size: 12px; line-height: 1;
+}
+.profile-upload-gallery-remove:hover { background: var(--secondary-red); }
+.profile-upload-gallery-add {
+  width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+  border: 2px dashed var(--secondary-light); border-radius: var(--radius-sm); cursor: pointer;
+  color: var(--secondary-dark); position: relative; transition: border-color 0.15s ease, color 0.15s ease;
+}
+.profile-upload-gallery-add:hover { border-color: var(--accent); color: var(--accent); }
+.profile-upload-gallery-add.is-busy { pointer-events: none; opacity: 0.7; }
+.profile-upload-gallery-add input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Drag-and-drop import modal (ImportModal.razor). */
+.import-modal { display: flex; flex-direction: column; gap: 14px; }
+.import-dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 36px 20px;
+  border: 2px dashed var(--secondary-light);
+  border-radius: var(--radius-md);
+  text-align: center;
+  cursor: pointer;
+  color: var(--secondary-dark);
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.import-dropzone:hover,
+.import-dropzone.is-dragover { border-color: var(--accent); color: var(--accent); background: rgba(200, 147, 40, 0.06); }
+.import-dropzone.is-busy { pointer-events: none; opacity: 0.7; }
+.import-dropzone-icon { font-size: 26px; color: var(--accent); }
+.import-dropzone-text { font-size: 13px; }
+.import-dropzone-file { font-size: 12px; font-weight: 600; color: var(--dark); }
+.import-dropzone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.import-template { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--secondary-dark); }
+
+/* Rich text editor (RichTextEditor.razor, Quill-backed). */
+.rte { display: flex; flex-direction: column; gap: 6px; }
+.rte-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rte-emoji { position: relative; }
+.rte-emoji-toggle, .rte-clear {
+  background: transparent; border: 1px solid var(--secondary-light); border-radius: var(--radius-sm);
+  padding: 5px 10px; font-size: 12px; color: var(--dark); cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.rte-emoji-toggle:hover, .rte-clear:hover { border-color: var(--accent); color: var(--accent); }
+.rte-emoji-panel {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 10;
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px;
+  padding: 8px; background: var(--panel, var(--light)); border: 1px solid var(--secondary-light);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-lg); width: 240px;
+}
+.rte-emoji-panel button { background: transparent; border: none; font-size: 16px; padding: 4px; cursor: pointer; border-radius: var(--radius-sm); }
+.rte-emoji-panel button:hover { background: rgba(200, 147, 40, 0.12); }
+.rte-surface {
+  min-height: 140px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--secondary-light);
+  background: var(--light);
+  color: var(--dark);
+}
+
+/* Adjustment pass 2 — long table-cell content: single-line ellipsis, full text on hover via title=. */
+.cell-truncate {
+  display: block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Adjustment pass 2 — center a field's contents within its .form-field/.form-field.full wrapper
+   (ProfileImageUpload etc. center themselves internally, but their wrapper is flex-start by default). */
+.form-field-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Adjustment pass 3 — Offering "Offer Days" Mon-Sun checkbox group. */
+.offer-days-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Adjustment pass 3 — Notifications compose modal: preset messages stacked one per row, and the
+   "send to all" checkbox + "select corporates" button placed on one row. */
+.filter-radio-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.corporate-select-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.offer-day-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: normal;
+}
+
+/* Adjustment pass 2 — place two upload fields (e.g. ProfileImageUpload) side by side at the top of a modal. */
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.upload-row > * { flex: 1 1 200px; }
+
+/* Adjustment pass 2 — inline checkbox list (e.g. Vendor's multi-select Business Type field). */
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 8px 10px;
+  border: 1px solid var(--secondary-light);
+  border-radius: var(--radius-sm);
+  background: var(--light);
+}
+.checkbox-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--dark);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+/* Adjustment pass 3 — custom-drawn checkbox/radio, applied globally so every checkbox and radio in
+   the app (data-grid select boxes, filters, forms) shares one consistent look instead of the bare
+   native browser default. Checkmark/dot color is hardcoded white (not a theme token) because it must
+   stay visible against the gold --accent fill in both light and dark mode. */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1.5px solid var(--secondary-light);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  transition: background .15s ease, border-color .15s ease;
+}
+input[type="radio"] { border-radius: 50%; }
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  transform: scale(0);
+  transition: transform .1s ease-in-out;
+  box-shadow: inset 1em 1em #fff;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+input[type="radio"]::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: scale(0);
+  transition: transform .1s ease-in-out;
+  background: #fff;
+}
+input[type="checkbox"]:checked,
+input[type="radio"]:checked { background: var(--accent); border-color: var(--accent); }
+input[type="checkbox"]:checked::before,
+input[type="radio"]:checked::before { transform: scale(1); }
+
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled { opacity: .5; cursor: not-allowed; }
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Adjustment pass 2 — searchable country combobox (Membership Tier modal). */
+.combo-box {
+  position: relative;
+}
+.combo-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--panel, var(--light));
+  border: 1px solid var(--secondary-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+}
+.combo-item {
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--dark);
+}
+.combo-item:hover, .combo-item.active { background: rgba(200, 147, 40, 0.12); color: var(--accent); }
+.combo-empty { padding: 8px 10px; font-size: 13px; color: var(--secondary-dark); }
+
+/* Adjustment pass 2 — Text Card Color field: swatch + hex text + contrast-adaptive live preview. */
+.color-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.color-field-row input[type="color"] {
+  width: 40px;
+  height: 34px;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--secondary-light);
+  cursor: pointer;
+}
+.color-hex-text {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--dark);
+  min-width: 70px;
+}
+.color-preview-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--secondary-light);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Adjustment pass 2 — check-all header checkbox + search/count toolbar in nested "settings" modals
+   (Vendor Selection modal, Setting Privileges modal). Reuses .datagrid-toolbar/.datagrid-search/
+   .datagrid-count for the toolbar row itself. */
+.matrix-checkall { display: inline-flex; align-items: center; gap: 6px; }

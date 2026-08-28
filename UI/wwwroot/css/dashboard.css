@@ -1,0 +1,516 @@
+/* ============================================================
+   Dashboard layout — ported from the legacy AOPC dashboard.css
+   ============================================================ */
+.main-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- Corporate Dashboard: modern Users Count --- */
+.corp-count-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: stretch;
+}
+.corp-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.corp-stat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--radius, 14px);
+  background: var(--panel, #fff);
+  border: 1px solid var(--secondary-light);
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.corp-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+.corp-stat::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--accent);
+}
+.corp-stat-icon {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #fff;
+  background: var(--accent);
+}
+.corp-stat-body { display: flex; flex-direction: column; line-height: 1.15; }
+.corp-stat-value { font-size: 28px; font-weight: 800; color: var(--primary, #111); }
+.corp-stat-label { font-size: 13px; color: var(--secondary-gray); margin-top: 2px; }
+.corp-stat--registered::before { background: #2f855a; }
+.corp-stat--registered .corp-stat-icon { background: #2f855a; }
+.corp-stat--unregistered::before { background: #c53030; }
+.corp-stat--unregistered .corp-stat-icon { background: #c53030; }
+.corp-stat--vip::before { background: #d69e2e; }
+.corp-stat--vip .corp-stat-icon { background: #d69e2e; }
+.corp-stat--remaining::before { background: var(--secondary-brown); }
+.corp-stat--remaining .corp-stat-icon { background: var(--secondary-brown); }
+.corp-count-chart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  border-radius: var(--radius, 14px);
+  background: var(--panel, #fff);
+  border: 1px solid var(--secondary-light);
+}
+@media (max-width: 976px) {
+  .corp-count-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .corp-stat-grid { grid-template-columns: 1fr; }
+  .corp-stat-value { font-size: 24px; }
+}
+
+/* --- Universal date-filter bar --- */
+.dash-filter-bar {
+  padding: 15px;
+  box-shadow: var(--shadow-md);
+  background: var(--light);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.select-date-btn {
+  background-color: var(--accent);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+.select-date-btn:hover { background-color: #a97e22; box-shadow: var(--shadow-gold); }
+.select-date-btn:active { transform: scale(0.97); }
+.select-date-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.option-filters {
+  background-color: var(--accent);
+  color: white;
+  padding: 5px 12px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.option-filters:hover { background-color: #a97e22; }
+.option-filters:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.option-filters option { color: black; background: white; }
+
+.btn-view-more {
+  background-color: var(--dark);
+  color: var(--light);
+  margin: 10px 0 0 auto;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  width: fit-content;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-view-more:hover { background-color: var(--accent); box-shadow: var(--shadow-gold); }
+.btn-view-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.clear-filter {
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 13px;
+  align-self: center;
+  text-decoration: underline;
+}
+
+/* --- Row group 1: Total User graph + counters --- */
+.row-group1 {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chart-class {
+  flex: 1 1 55%;
+  min-width: 400px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  background-color: var(--light);
+  transition: box-shadow 0.2s ease;
+}
+.chart-class h4 { color: var(--accent); margin-bottom: 10px; }
+.chart-class .chart-holder { position: relative; height: 350px; }
+
+.inner-group {
+  flex: 1 1 35%;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.new-users, .supports {
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  background-color: var(--light);
+  transition: box-shadow 0.2s ease;
+}
+.new-users .controls, .supports .controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.new-users .controls h4, .supports .controls h4 { color: var(--accent); }
+.new-users .controls .filters { display: flex; gap: 8px; align-items: center; }
+
+.user-counter {
+  margin: 15px auto;
+  width: 90%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px;
+}
+.user-counter .count, .support-counter .count {
+  font-size: 55px;
+  font-family: "Montserrat-Bold";
+  color: var(--accent);
+  text-align: center;
+}
+.total-user-container { color: var(--dark); text-align: center; }
+.nur-note { font-size: 13px; color: var(--dark); }
+#percent-registered { color: var(--accent); font-weight: bold; }
+.support-counter { display: flex; justify-content: center; padding: 10px 0; }
+
+/* --- Row group 2: Top-3 carousel --- */
+.carousel-holder { position: relative; }
+.carousel {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel-track {
+  display: flex;
+  gap: 10px;
+}
+.dash-card {
+  scroll-snap-align: start;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 15px;
+  background-color: var(--light);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease;
+  position: relative;
+}
+
+/* Scoped to the carousel context — .dash-card is reused as a plain stat tile elsewhere
+   (e.g. CorporateDashboard.razor's .dashboard-cards), which isn't a flex/scroll row and
+   must not get carousel-only sizing. */
+.carousel-track .dash-card {
+  flex: 0 0 calc((100% - 2 * 10px) / 3);
+  max-width: calc((100% - 2 * 10px) / 3);
+}
+
+/* Relative wrapper so a section's Spinner overlay clips to its table area. */
+.grid-holder { position: relative; }
+.dash-card h4 { color: var(--dark); font-weight: 700; }
+.dash-card .card-body {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 220px;
+}
+.dash-card .chart-holder { position: relative; width: 45%; height: 100%; }
+.dash-card .legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 55%;
+  min-width: 0;
+}
+.dash-card .legend .data { display: flex; align-items: center; gap: 8px; }
+.dash-card .legend .data-label { height: 12px; width: 12px; border-radius: 2px; flex-shrink: 0; }
+.dash-card .legend .data-name {
+  font-size: clamp(0.55rem, 1.5vw, 0.75rem);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--dark);
+}
+.dash-card .legend .data-value { font-size: clamp(0.55rem, 1.5vw, 0.75rem); margin-left: auto; }
+.dash-card .card-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.donut-empty { color: var(--secondary-dark); font-size: 0.85rem; padding: 20px 0; }
+
+/* ============================================================
+   Spinner / loading indicator (Spinner.razor)
+   ============================================================ */
+@keyframes aopc-spin { to { transform: rotate(360deg); } }
+
+.aopc-spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aopc-spinner-ring {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--secondary-light);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: aopc-spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.aopc-spinner-ring.sm {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+}
+
+.aopc-spinner-label { color: var(--secondary-dark); font-size: 0.85rem; }
+
+/* Overlay variant: dims and covers a position:relative section while it loads. */
+.aopc-spinner-overlay {
+  position: absolute;
+  inset: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: color-mix(in srgb, var(--light) 72%, transparent);
+  border-radius: inherit;
+  z-index: 5;
+}
+
+/* Anchor-based export triggers (.btn-view-more) can't use the disabled attribute. */
+.btn-view-more.disabled { pointer-events: none; opacity: 0.6; }
+
+.carousel-btn {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.carousel-btn.prev { left: -10px; }
+.carousel-btn.next { right: -10px; }
+.carousel-btn:hover { background-color: #a97e22; box-shadow: var(--shadow-gold); transform: translateY(-50%) scale(1.06); }
+.carousel-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* --- Row groups 3 & 4: tables --- */
+.row-group3, .row-group4 { display: flex; gap: 10px; width: 100%; flex-wrap: wrap; }
+.cta-table, .news-feed, .ci-table {
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  background-color: var(--light);
+  transition: box-shadow 0.2s ease;
+}
+.cta-table { flex: 6 1 55%; min-width: 400px; }
+.news-feed { flex: 4 1 30%; min-width: 300px; }
+.ci-table { flex: 1 1 100%; }
+.cta-table .controls, .news-feed .controls, .ci-table .controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.cta-table .controls h4, .news-feed .controls h4, .ci-table .controls h4 { color: var(--accent); }
+.cta-table .filters, .news-feed .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* ============================================================
+   DataGrid
+   ============================================================ */
+.datagrid { display: flex; flex-direction: column; width: 100%; }
+.datagrid-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.datagrid-search { display: flex; align-items: center; gap: 8px; background: var(--light); border-radius: var(--radius-pill); box-shadow: inset 1px 1px 4px 1px var(--shadow); padding: 6px 14px; transition: box-shadow 0.15s ease; }
+.datagrid-search:focus-within { box-shadow: inset 1px 1px 4px 1px var(--shadow), 0 0 0 2px var(--accent); }
+.datagrid-search input { border: none; background: transparent; outline: none; color: var(--dark); width: 220px; }
+.datagrid-search i { color: var(--secondary-dark); }
+.datagrid-scroll { overflow-x: auto; width: 100%; border-radius: var(--radius-md); }
+.datagrid-table { width: 100%; border-collapse: collapse; text-align: left; }
+.datagrid-table thead tr { border-bottom: 2px solid var(--accent); }
+.datagrid-table th { font-size: 14px; padding: 10px 12px; color: var(--dark); white-space: nowrap; }
+.datagrid-table td { border-bottom: 1px solid var(--secondary-light); padding: 10px 12px; font-size: 13px; color: var(--dark); }
+.datagrid-table tbody tr { transition: background-color 0.15s ease; box-shadow: inset 0 0 0 0 var(--accent); }
+.datagrid-table tbody tr:nth-child(even) { background-color: var(--zebra-bg); }
+.datagrid-table tbody tr:hover { background-color: rgba(200,147,40,0.10); box-shadow: inset 3px 0 0 0 var(--accent); }
+.datagrid-empty { text-align: center; color: var(--secondary-dark); padding: 20px; }
+.datagrid-pagination { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 12px; }
+.datagrid-pagination .page-btn {
+  border: 1px solid var(--secondary-light);
+  background: var(--light);
+  color: var(--dark);
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.datagrid-pagination .page-btn:hover:not(:disabled) { background: var(--accent); color: white; border-color: var(--accent); }
+.datagrid-pagination .page-btn:disabled { opacity: 0.4; cursor: default; }
+.datagrid-pagination .page-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.datagrid-pagination .page-info { font-size: 13px; color: var(--dark); }
+
+/* ============================================================
+   Modal — canonical chrome, shared by Modal.razor and DateRangeModal.razor
+   ============================================================ */
+@keyframes aopc-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes aopc-modal-pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.aopc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: aopc-modal-fade-in 0.15s ease;
+}
+.aopc-modal {
+  background: var(--light);
+  color: var(--dark);
+  border-radius: var(--radius-lg);
+  width: 600px;
+  max-width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  animation: aopc-modal-pop-in 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aopc-modal.wide { width: 900px; }
+.aopc-modal.confirm { width: 420px; }
+.aopc-modal.confirm .aopc-modal-body p { color: var(--dark); font-size: 14px; line-height: 1.5; }
+.aopc-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--secondary-light);
+}
+.aopc-modal-header h4 { color: var(--accent); font-family: "Montserrat-SemiBold"; }
+.aopc-modal-close {
+  background: transparent;
+  color: var(--dark);
+  border: 1px solid var(--secondary-light);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.aopc-modal-close:hover { background: var(--secondary-red); color: white; border-color: var(--secondary-red); }
+.aopc-modal-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.aopc-modal-body { padding: 20px; overflow-y: auto; }
+.aopc-modal-footer { padding: 14px 20px; border-top: 1px solid var(--secondary-light); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* --- Date range modal content (DateRangeModal.razor now reuses .aopc-modal chrome above) --- */
+.date-controller-holder { display: flex; width: 100%; gap: 15px; }
+.date-filter-contorl { display: flex; flex-direction: column; gap: 4px; width: 50%; }
+.date-filter-contorl input {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  box-shadow: inset 1px 1px 3px 1px var(--shadow);
+  background: var(--light);
+  color: var(--dark);
+  font-size: 14px;
+}
+.date-filter-contorl label { font-weight: 600; color: var(--dark); font-size: 13px; }
+
+/* --- Export filter (checkbox) popover --- */
+.export-filter-form { display: flex; flex-direction: column; gap: 4px; }
+.export-filter-form .form-check { display: flex; justify-content: space-between; padding: 8px 4px; }
+
+/* ============================================================
+   Responsive breakpoints (tablet/mobile)
+   ============================================================ */
+@media (max-width: 976px) {
+  .carousel-track .dash-card { flex: 0 0 calc((100% - 10px) / 2); max-width: calc((100% - 10px) / 2); }
+}
+
+@media (max-width: 768px) {
+  .chart-class { min-height: 300px; }
+  .chart-class .chart-holder { height: 260px; }
+
+  .carousel-track .dash-card { flex: 0 0 100%; max-width: 100%; }
+  .dash-card .card-body {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+  }
+  .dash-card .chart-holder { width: 100%; height: 180px; }
+  .dash-card .legend { width: 100%; }
+
+  .carousel-btn { width: 32px; height: 32px; font-size: 16px; }
+  .carousel-btn.prev { left: 0; }
+  .carousel-btn.next { right: 0; }
+}

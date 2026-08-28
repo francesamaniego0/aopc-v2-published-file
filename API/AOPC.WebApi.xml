@@ -1,0 +1,246 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AOPC.WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:AOPC.WebApi.Controllers.ApiAdminAcessController">
+            <summary>Ports AuthSystem.Data.Controller.ApiAdminAcessController.FinalUserRegistration. Route/verb/name
+            preserved exactly: POST api/ApiAdminAcess/FinalUserRegistration.
+            DEVIATION (deliberate, flagged): the original controller had no [Authorize] at all (fully open). Since
+            this endpoint mutates user credentials, [Authorize] is applied here as a deliberate hardening, not a
+            silent one.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiAuditHistoryController">
+             <summary>Ports AuthSystem.Data.Controller.ApiAuditHistoryController. This controller queries the
+             generic AuditLog/LoginAttempt tables (the EF-interceptor-driven audit trail), distinct from the legacy
+             manual AuditTrailEntry table served by ApiAuditTrailController.
+            
+             HARDENING: the original had NO [Authorize] attribute at all on this controller (an apparent oversight,
+             given it exposes audit/login-history data). [Authorize] has been added here deliberately — flagged per
+             the porting brief, not a silent change.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiAuditTrailController">
+            <summary>Ports AuthSystem.Data.Controller.ApiAuditTrailController. Original applied
+            [Authorize("ApiKey")] (a custom API-key policy); matching the migrated-bearer-auth convention used
+            elsewhere in this rewrite, plain [Authorize] is used here.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiCorporateController">
+            <summary>Ports AuthSystem.Data.Controller.ApiCorporateController.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiCorporateListingController">
+            <summary>Ports AuthSystem/API.Data.Controller.ApiCorporateListingController.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiCorporateListingController.DownloadCompanyInformation(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
+            <summary>Exports the Company Information table as .xlsx. The boolean flags mirror the legacy
+            export-filter checkboxes; a column is included only when its flag is true (all false =&gt; all
+            columns, matching the legacy "Show All").</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiCorporatePrivilegeController">
+            <summary>Ports AuthSystem.Data.Controller.ApiCorporatePrivilegeController.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiLogInController">
+            <summary>Ports AuthSystem.Data.Controller.ApiLogInController's LogIn action, modernized to real JWT
+            bearer auth, plus a genuinely new Refresh action. The original applied [Authorize("ApiKey")] to the
+            whole controller (including LogIn itself), which is backwards — you cannot hit a protected endpoint to
+            obtain your first credential. Both actions here are explicitly [AllowAnonymous].
+            The original's dead "#region Old endpoint" (LogIn_old + GenerateRefreshToken/SetRefreshToken referencing
+            an unwired RefreshToken model) was not ported. Session-based BTCorporateId/BTUserType reads/writes were
+            dropped entirely — the API is stateless; corporateId/role are returned in the response body instead.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiLogInController.VerifyLoginOtp(AOPC.Application.DTOs.Auth.VerifyLoginOtpRequestDto,System.Threading.CancellationToken)">
+            <summary>New endpoint — confirms the email code LogIn sent and, only on success, issues the JWT
+            access/refresh tokens that LogIn itself withheld.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiLogInController.Refresh(AOPC.Application.DTOs.Auth.RefreshRequestDto,System.Threading.CancellationToken)">
+            <summary>New endpoint (not a port) — the plan commits to a working refresh-token flow that the
+            original never actually implemented, only stubbed with dead code.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiMembershipController">
+            <summary>Ported from ApiMembershipController (AOPC-APIV3-Source-Code) — Membership domain only.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiNotifcationController">
+            <summary>Ports AuthSystem.Data.Controller.ApiNotifcationController. The class-name typo
+            ("Notifcation") is preserved verbatim since [Route("api/[controller]/[action]")] derives the route
+            from it — renaming would change the wire route.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiOfferingController">
+            <summary>Ported from ApiOfferingController (AOPC-APIV3-Source-Code) — Offering domain only.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiPositionController">
+            <summary>
+            Adjustment-pass-2 (new): dedicated endpoint for the CMS Position list's server-side pagination.
+            A separate controller (rather than adding to the shared ApiRegisterController, which also owns the
+            Registration tables) so this page's plumbing doesn't collide with concurrent Registration work. The
+            existing PositionList/SavePosition/DeletePosition endpoints stay on ApiRegisterController unchanged.
+            </summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiPrivilegeController">
+            <summary>Ported from ApiPrivilegeController (AOPC-APIV3-Source-Code) — Privilege domain only.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiRegisterController">
+            <summary>Ported from ApiRegisterController (AOPC-APIV3-Source-Code) — the entire
+            Registration/User/Position/FamilyMember slice. NOTE: the brief's summary line said "23 active
+            endpoints", but the brief's own numbered list (1-24) and a direct read of the source file both
+            show 24 distinct active [HttpGet]/[HttpPost] actions outside the dead regions; all 24 are ported
+            here (flagged discrepancy — see report). The trailing UploadImage action was dead code inside the
+            original's "#region Not Using" and was correctly excluded per instructions.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiSupportController">
+            <summary>Ports AuthSystem.Data.Controller.ApiSupportController (15 active endpoints; the remaining
+            endpoints in the legacy file were commented-out dead code and are not ported).</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.GetSupportCountList(System.Threading.CancellationToken)">
+            <summary>Preserves the original's quirk of returning Ok(...) (200) with an error message string
+            on exception, rather than a 4xx/5xx status.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostClickRestaurantList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Resto.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostClickWellnessList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Wellness.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostClickHealthList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Offer (legacy action name says "Health" but filters on the literal module "news" —
+            preserved verbatim, see ISupportService remarks).</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostClickedHospitalityList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Hotel.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostCickStoreList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Store. NOTE: the misspelled action name ("Cick" not "Click") is preserved exactly from
+            the original.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.DownloadMostClick(System.String,System.Int32,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Exports one "Top most-clicked" category as .xlsx. `module` = restaurant | hotel |
+            store | wellness | offer.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.DownloadDashboard(AOPC.Application.DTOs.Support.DashboardExportRequestDto,System.Threading.CancellationToken)">
+            <summary>Exports a snapshot of the whole dashboard as it's shown on screen: the Total User
+            counters, each Top-3 card reduced to top 3 + "Others" (not the full click list), and the
+            Call to Actions / Module Click Count / Company Information tables in full (unpaginated).</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.LoadCardAsync(System.String,AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
+            <summary>Same module -> loader mapping as DownloadMostClick's switch (module "restaurant" has no
+            explicit case and falls through to the default/Restaurant arm, matching that endpoint's behavior).</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiSupportController.BuildTopThreeAndOthers(System.Collections.Generic.List{AOPC.Application.DTOs.Support.MostClickItemDto})">
+            <summary>Top-3 + "Others" reduction, mirrors Dashboard.razor's client-side BuildSegments (order
+            by Total desc, take top 3, sum the remainder into one "Others" row).</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiUploadController">
+            <summary>Generic image upload endpoint used by every maintenance module's image/logo/gallery fields
+            (Business Type, Hotel, Vendor, Membership Tier, Offering, Registration profile photo). Replaces the old
+            CMS's several near-identical per-module UploadFile actions with one reusable endpoint: save the file,
+            return its URL, then the caller includes that URL in the normal Save request. No resizing (the old
+            CMS's 400x400 System.Drawing.Bitmap resize is intentionally not ported — deprecated/Windows-only API).</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiUserAcessController">
+            <summary>Ports AuthSystem.Data.Controller.ApiUserAcessController (the 9 active endpoints only — the
+            original's dead-code regions were not ported). Class/file name preserves the original's own "Acess"
+            misspelling since [Route("api/[controller]/[action]")] derives the route segment from it.
+            Original applied [Authorize("ApiKey")] (a custom API-key policy); matching the migrated-bearer-auth
+            convention already established by the other controllers in this solution (e.g. ApiCorporateController),
+            plain [Authorize] is used here.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.AudtiTrails(AOPC.Application.DTOs.UserAccess.AuditTrailDto,System.Threading.CancellationToken)">
+            <summary>Mobile: Save Action to audittrails. Action name/typo preserved verbatim from the legacy route.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.SaveJWToken(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: Send reset password link.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.TrailSupport(AOPC.Application.DTOs.UserAccess.SupportModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: New Support and Send email.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.GetKeyExpiry(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: GetKeyExpiry.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.DeleteToken(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: Delete Token.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.QrCodeLogs(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: Save QrCodeLogs.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.QrSendEmail(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: Send QrCodeLogs Email. Kept as an independently-invocable endpoint (its original
+            route is still hit directly by some mobile clients) as well as being called internally by
+            QrCodeLogs. Original has NO try/catch — preserved: an exception here is left to propagate (500).</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.UserInfoFilteredbyJWToken(AOPC.Application.DTOs.UserAccess.JwtModelDto,System.Threading.CancellationToken)">
+            <summary>Mobile: Get User info by JWT Token. Original never returns NotFound — always 200, possibly
+            with an empty/default VM.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.Threading.CancellationToken)">
+            <summary>Literal route override preserved exactly: final route is api/ApiUserAcess/upload
+            (lowercase), not the default [action]-derived template.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ApiVendorController">
+            <summary>
+            Thin controller for the Vendor domain — ports the 13 active endpoints of the legacy
+            ApiVendorController exactly (route shape, action names/verbs, response shapes). All business
+            logic lives in <see cref="T:AOPC.Application.Common.Interfaces.IVendorService"/>.
+            </summary>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.HealthCheckController">
+             <summary>
+             Health check and system monitoring endpoint.
+            
+             This controller provides two primary capabilities:
+             1. Real-time server resource monitoring (CPU, memory, disk usage)
+             2. On-demand SQL Server database backup operations
+            
+             Both endpoints require authorization and return structured responses
+             suitable for monitoring dashboards or maintenance tasks.
+            
+             Ports AuthSystem.Data.Controller.HealthCheckController almost as-is — it was already the most
+             "modern-looking" controller in the legacy codebase. This port injects IRepository&lt;User&gt;/
+             IRepository&lt;Corporate&gt;/IRepository&lt;AuditTrailEntry&gt; directly (rather than adding a thin
+             IHealthCheckService wrapper) since the original's two inline EF queries are trivial, single-use, and
+             already this close to Clean-Architecture shape — an extra service layer would add indirection without
+             adding testability or reuse value.
+             </summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.HealthCheckController.GetSystemResources(System.Threading.CancellationToken)">
+            <summary>
+            Retrieves the current system resource utilisation (CPU, memory, disk), plus the active-user count
+            and total audit-trail row count ("totalSessions" — preserved as-is; this is really just an
+            audit-log row count, not a session count, matching the original's odd-but-intentional naming).
+            </summary>
+            <response code="200">Returns a snapshot of current system resource usage.</response>
+            <response code="500">Internal server error if resource metrics cannot be retrieved.</response>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.HealthCheckController.BackupDatabase">
+            <summary>
+            Initiates an immediate full backup of the application database.
+            </summary>
+            <response code="200">Returns a <see cref="T:AOPC.Application.Common.Models.BackupResult"/> with success/failure status and details.</response>
+            <response code="500">Internal server error if the backup operation fails unexpectedly.</response>
+        </member>
+        <member name="T:AOPC.WebApi.Controllers.ErrorResponse">
+            <summary>Standard error response model for API errors.</summary>
+        </member>
+        <member name="P:AOPC.WebApi.Controllers.ErrorResponse.Error">
+            <summary>Brief error message.</summary>
+        </member>
+        <member name="P:AOPC.WebApi.Controllers.ErrorResponse.Details">
+            <summary>Additional context or remediation guidance.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Hubs.SupportHub">
+            <summary>Pushes "new support ticket" notifications to connected CMS clients (Oyster-admin Support Logs
+            page). No server-invoked client methods beyond the broadcast raised from
+            AOPC.WebApi.Realtime.SupportRealtimeNotifier — this hub has no client-to-server RPC methods of its
+            own, it only exists as a named broadcast target. Requires the same JWT bearer auth as the rest of the
+            API (see Program.cs's JwtBearerEvents.OnMessageReceived for the "access_token" query-string handoff
+            SignalR clients need, since browser WebSocket/SSE transports can't set an Authorization header).</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Realtime.SupportRealtimeNotifier">
+            <summary>Infrastructure/adapter-layer implementation of ISupportRealtimeNotifier (the Application-layer
+            port) — the only place in the codebase allowed to reference IHubContext&lt;SupportHub&gt; directly.</summary>
+        </member>
+        <member name="T:Program">
+            <summary>Exposes the top-level-statement-generated Program class as public so
+            Microsoft.AspNetCore.Mvc.Testing's WebApplicationFactory&lt;Program&gt; can reference it from the
+            separate AOPC.Tests assembly. Adds no behavior — this is the standard ASP.NET Core testing pattern.</summary>
+        </member>
+    </members>
+</doc>
