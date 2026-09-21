@@ -468,7 +468,7 @@
             <summary>Mirrors PostMostClickWellnessList (BuildMostClickList with module "Wellness").</summary>
         </member>
         <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickHealthListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
-            <summary>Mirrors PostMostClickHealthList (BuildMostClickList with the literal module "news").</summary>
+            <summary>Mirrors PostMostClickHealthList (BuildMostClickList with module "News").</summary>
         </member>
         <!-- Badly formed XML comment ignored for member "M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickedHospitalityListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)" -->
         <member name="M:AOPC.Application.Common.Interfaces.ISupportService.GetMostClickStoreListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
@@ -597,6 +597,79 @@
         </member>
         <member name="T:AOPC.Application.Common.Models.SystemResourceInfo">
             <summary>A snapshot of server resource utilization. All values are percentages (0.0-100.0).</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Utils.EmailTemplates">
+            <summary>Every outbound HTML email body in one place, all sharing one chrome (<see cref="M:AOPC.Application.Common.Utils.EmailTemplates.Wrap(System.String)"/>):
+            a light brand-tone backdrop, a dark banner carrying the white AOPC logo, and a white content card.
+            Previously each service inlined its own copy of the shell — several still carried the legacy
+            full-bleed black background image, a 100px outer padding and a `margin:30%` centering hack, so the
+            same product sent visibly different-looking mail depending on which service triggered it. Keeping
+            the shell here means a design change lands in one edit instead of eight, and every body is a pure
+            function of its inputs, so it can be rendered and previewed without a database or SMTP.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.Wrap(System.String)">
+            <summary>The shared shell. Pass only the card's inner content; the backdrop, logo banner and
+            white card come from here.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.LoginOtp(System.String,System.String)">
+            <summary>Login second factor — the code AuthService.LoginAsync emails before issuing tokens.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.PasswordReset(System.String)">
+            <summary>Forgot-password link (UserAccessService.SaveJwTokenAsync).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.SupportConcernInternal(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>Internal copy of a member's support concern, sent to the support/marketing recipients.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.SupportConcernAcknowledgement(System.String)">
+            <summary>Acknowledgement sent back to the member who raised the concern.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.SupportStatusUpdate(System.String,System.String)">
+            <summary>Support ticket status change (SupportService.SendSupportUpdateEmailAsync).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.QrScanLog(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.DateTime)">
+            <summary>QR scan audit notice sent to the internal recipient list.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.RemainingVipExhausted(System.String)">
+            <summary>Sent to a corporate's admin once its allocated VIP count is fully used up.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.RegistrationWelcome(System.String)">
+            <summary>Welcome + "complete your registration" link (UserService.SendRegistrationEmailAsync).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.RegistrationInvite">
+            <summary>Registration invite for unregistered users (CorporateListingService.EmailUnregisterUserAsync).
+            Replaces a bespoke gradient-bordered, 100vh full-screen layout that shared none of the other
+            mail's styling (and relied on webfonts and viewport units that mail clients largely drop).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.EmailTemplates.CorporateNotification(System.String,System.String)">
+            <summary>A CMS-composed notification (NotificationService). The composed body is rich text from the
+            Notifications page editor, so it goes in as-is — previously it was sent with no chrome at all.</summary>
+        </member>
+        <member name="T:AOPC.Application.Common.Utils.ImageUrlHelper">
+             <summary>Resolves a stored image path into the full URL every API response returns, and reverses
+             that on the way back in on Save — so the two stay symmetric and the database only ever ends up
+             storing a bare path (or an untouched legacy URL), never Uploads:PathUrl baked in permanently.
+            
+             Without the reverse (StripPathUrl) direction, a Get/List response would hand back an absolute URL,
+             the client would round-trip that same value back on the next Save untouched, and — since it already
+             looks "absolute" — it would get written straight to the database. That reproduces the exact bug
+             already fixed once for the legacy CDN URL (see BusinessService/BusinessTypeService/OfferingService/
+             PrivilegeService/MembershipService/UserService's ResolveImageUrl helpers), except this time with
+             Uploads:PathUrl baked in — which breaks the moment PathUrl ever changes (dev/staging/prod split,
+             moving the uploads host, etc.).</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.ImageUrlHelper.ResolveForResponse(System.String,System.String)">
+            <summary>Applied when building a Get/List response DTO. A legacy absolute URL (or null/empty) is
+            returned unchanged; anything else — a bare path like "/uploads/business-types/guid.jpg" — is
+            prefixed with pathUrl so every API consumer (mobile app included, not just the Blazor CMS) gets a
+            directly loadable URL without needing its own resolution logic.</summary>
+        </member>
+        <member name="M:AOPC.Application.Common.Utils.ImageUrlHelper.StripPathUrl(System.String,System.String)">
+            <summary>Applied at the top of a Save method, before any of the per-service legacy-prefix
+            handling runs. If the incoming value is exactly ResolveForResponse's own output round-tripped
+            back unchanged (the common case: the client fetched a record, didn't touch its image, and saved
+            it again), strips pathUrl back off so what gets persisted is the bare path — never pathUrl
+            baked into the database. Anything else (a bare relative path from a fresh upload, or a genuine
+            legacy URL) passes through untouched.</summary>
         </member>
         <member name="T:AOPC.Application.Common.Utils.OtpGenerator">
             <summary>Shared 6-digit numeric one-time-code generator, used by both the registration-OTP flow
@@ -757,6 +830,11 @@
         <member name="T:AOPC.Application.DTOs.Auth.LoginRequestDto">
             <summary>Login payload. Mirrors the subset of the legacy UserModel actually used by
             ApiLogInController.LogIn (Username/Password only).</summary>
+        </member>
+        <member name="P:AOPC.Application.DTOs.Auth.LoginRequestDto.IsMobile">
+            <summary>When true, the mobile app is logging in and the email OTP step is skipped entirely —
+            LoginAsync issues tokens directly instead of returning OtpRequired. Web clients (false, the default)
+            still go through VerifyLoginOtpAsync.</summary>
         </member>
         <member name="T:AOPC.Application.DTOs.Auth.LoginResponseDto">
             <summary>Modernized login/refresh success payload: real JWT access + refresh tokens (replacing the
@@ -1462,11 +1540,9 @@
             LoginAsync quirk (dayDifference == 0 only), relocated here so it still gates before a token is
             handed out, just after OTP confirmation instead of before.</summary>
         </member>
-        <member name="M:AOPC.Application.Services.AuthService.BuildOtpEmailHtmlBody(System.String,System.String)">
-            <summary>Styling matches the other branded emails in this codebase (see
-            UserService.BuildWelcomeEmailHtmlBody / CorporateListingService.RegistrationInviteHtmlBody) — same
-            dark cover-pattern background, white rounded card, centered AOPC logo. The code itself is rendered
-            large and letter-spaced in its own box so it's unambiguous to read/type on a phone screen.</summary>
+        <member name="M:AOPC.Application.Services.AuthService.CompleteLoginAsync(AOPC.Domain.Entities.User,AOPC.Domain.Entities.UserType,AOPC.Domain.Entities.Corporate,AOPC.Domain.Entities.Position,System.String,System.Threading.CancellationToken)">
+            <summary>Shared tail of LoginAsync (mobile, OTP skipped) and VerifyLoginOtpAsync (web, after OTP
+            confirmation): membership-expiry check, token issuance, and attempt logging.</summary>
         </member>
         <member name="M:AOPC.Application.Services.AuthService.RefreshAsync(AOPC.Application.DTOs.Auth.RefreshRequestDto,System.Threading.CancellationToken)">
             <summary>New flow — the original never implemented a working refresh endpoint (only dead-code stubs
@@ -1732,8 +1808,11 @@
         </member>
         <!-- Badly formed XML comment ignored for member "M:AOPC.Application.Services.SupportService.BuildMostClickListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.String,System.Threading.CancellationToken)" -->
         <member name="M:AOPC.Application.Services.SupportService.GetMostClickHealthListAsync(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
-            <summary>Note (flagged): literal lowercase "news" preserved exactly, despite the legacy method name
-            (PostMostClickHealthList) suggesting "Health"/"News" — matching an actual Module value.</summary>
+            <summary>Offers. Despite the legacy method name (PostMostClickHealthList) suggesting "Health", this
+            backs the "Top 3 Offers" card and filters on the actual Module value "News" (offering-view audit
+            rows). FIXED: was the literal lowercase "news" — BuildMostClickListAsync filters an in-memory List
+            with a case-sensitive C# Contains, and the DB only ever stores "News" (verified: 3760 rows, 0 rows
+            of lowercase "news"), so the old literal matched nothing and the card always showed "No data".</summary>
         </member>
         <member name="T:AOPC.Application.Services.UserAccessService">
             <summary>Ports AuthSystem.Data.Controller.ApiUserAcessController's business logic (the 9 active
@@ -1786,12 +1865,6 @@
             repository-fetched lists since Application code cannot reference EF Core; null-safety on LEFT
             JOIN results is explicit where the original relied on SQL Server's NULL-column semantics.
             </summary>
-        </member>
-        <member name="M:AOPC.Application.Services.UserService.BuildWelcomeEmailHtmlBody(System.String)">
-            <summary>Copied styling verbatim from the other welcome/invite emails in this codebase (see
-            CorporateListingService.RegistrationInviteHtmlBody) — kept local since Application code can't share
-            a private const across services cleanly, and the wording here differs slightly (personalized
-            greeting instead of a generic invite blast).</summary>
         </member>
         <member name="T:AOPC.Application.Services.VendorService">
             <summary>

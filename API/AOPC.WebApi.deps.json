@@ -913,6 +913,7 @@
       "AOPC.Application/1.0.0": {
         "dependencies": {
           "AOPC.Domain": "1.0.0",
+          "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.2",
           "System.Linq.Dynamic.Core": "1.7.3"
         },

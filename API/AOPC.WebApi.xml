@@ -4,6 +4,20 @@
         <name>AOPC.WebApi</name>
     </assembly>
     <members>
+        <member name="T:AOPC.WebApi.Common.UploadPaths">
+            <summary>Resolves the "Uploads" appsettings section (see ApiUploadController): where uploaded
+            files are physically stored, and the max size allowed per file.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Common.UploadPaths.ResolveRoot(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>Where uploaded files are physically stored. Configurable via Uploads:RootFolder
+            (appsettings) so uploads can live outside wwwroot/outside the deployed app folder (e.g. a
+            mapped network share) instead of being tied to the app's content root. Empty/unset falls back
+            to the previous behavior of wwwroot/uploads.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Common.UploadPaths.ResolveMaxFileSizeBytes(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>Max allowed size per uploaded file, in bytes. Configurable via Uploads:MaxFileSizeMb
+            (appsettings); defaults to 5 MB when unset.</summary>
+        </member>
         <member name="T:AOPC.WebApi.Controllers.ApiAdminAcessController">
             <summary>Ports AuthSystem.Data.Controller.ApiAdminAcessController.FinalUserRegistration. Route/verb/name
             preserved exactly: POST api/ApiAdminAcess/FinalUserRegistration.
@@ -101,8 +115,8 @@
             <summary>Wellness.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostClickHealthList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
-            <summary>Offer (legacy action name says "Health" but filters on the literal module "news" —
-            preserved verbatim, see ISupportService remarks).</summary>
+            <summary>Offer (legacy action name says "Health" but filters on module "News" — see ISupportService
+            remarks).</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiSupportController.PostMostClickedHospitalityList(AOPC.Application.DTOs.Support.UserFilterDateRangeDto,System.Threading.CancellationToken)">
             <summary>Hotel.</summary>
@@ -132,8 +146,23 @@
             <summary>Generic image upload endpoint used by every maintenance module's image/logo/gallery fields
             (Business Type, Hotel, Vendor, Membership Tier, Offering, Registration profile photo). Replaces the old
             CMS's several near-identical per-module UploadFile actions with one reusable endpoint: save the file,
-            return its URL, then the caller includes that URL in the normal Save request. No resizing (the old
-            CMS's 400x400 System.Drawing.Bitmap resize is intentionally not ported — deprecated/Windows-only API).</summary>
+            return its URL, then the caller includes that URL in the normal Save request. No resizing/re-encoding
+            (the old CMS's 400x400 System.Drawing.Bitmap resize is intentionally not ported — deprecated/Windows-only
+            API) — the file is stored exactly as uploaded, under a per-module category folder, e.g.
+            /uploads/business-types/guid.jpg. Also exposes DeleteImage so callers can clean up the file an image
+            field previously pointed at once it's replaced/removed.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUploadController.DeleteImage(System.String)">
+            <summary>Best-effort cleanup for a file an image field previously pointed at, once it's been
+            replaced or removed — called by the client only for a bare "/uploads/..." path (never for a
+            legacy absolute URL, which points outside this app entirely). Always resolves the path against
+            the uploads root and confirms it stays inside it before deleting, so a crafted "../" segment
+            can't be used to delete anything else on disk. Idempotent: a missing/invalid/external path is a
+            silent no-op, not an error, since the caller has no real recourse if cleanup fails anyway.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUploadController.SanitizeCategory(System.String)">
+            <summary>Folder-name-safe category (letters, digits, hyphens only); anything else — including an
+            absent category, or an attempt to smuggle path-traversal segments — collapses to "misc".</summary>
         </member>
         <member name="T:AOPC.WebApi.Controllers.ApiUserAcessController">
             <summary>Ports AuthSystem.Data.Controller.ApiUserAcessController (the 9 active endpoints only — the
