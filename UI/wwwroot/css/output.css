@@ -332,7 +332,7 @@ body {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.sidebar-collapsed {
+he.sidebar-collapsed {
   --sidebarwidth: var(--sidebarwidth-collapsed);
 }
 
@@ -493,6 +493,7 @@ body {
 .sidenav li.maintenance > a {
   height: 44px;
   flex: 0 0 44px;
+  padding-right: 12px;
 }
 
 .sidenav ul.sub-nav {
@@ -516,7 +517,7 @@ body {
 
 .sidenav ul.sub-nav li > a {
   width: 100%;
-  padding-left: 44px;
+  padding-left: 56px;
 }
 
 /* Accordion: expansion is purely click-driven (.open, toggled from SideBar.razor's
@@ -549,6 +550,7 @@ body {
 .sidebar-collapsed .sidebar .sidenav ul li a {
   justify-content: center;
   padding-left: 0;
+  padding-right: 0;
 }
 
 /* No inline accordion when collapsed (the submenu becomes a flyout instead, below) — the
@@ -580,6 +582,22 @@ body {
 .sidebar-collapsed .sidenav li.maintenance .sub-nav li {
   justify-content: flex-start;
   padding: 0 12px;
+}
+
+.sidebar-version {
+  flex-shrink: 0;
+  padding: 10px 0 14px;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--dark);
+  opacity: 0.45;
+}
+
+.sidebar-collapsed .sidebar .sidebar-version {
+  opacity: 0;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 .sidebar-backdrop {
@@ -821,6 +839,10 @@ form .pass-cont > .view-pass {
   box-shadow: 1px 2px 2px 1px rgba(0, 0, 0, 0.595);
   background-color: #d7d2cb;
   cursor: pointer;
+}
+
+.otp-hint {
+  color: white;
 }
 
 #caps-warning {
@@ -1184,7 +1206,17 @@ main {
   cursor: pointer;
   z-index: 2;
   box-shadow: var(--shadow-sm);
-  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+/* Only surface the arrows while the carousel is actually being interacted with — hovered, or
+   focused via keyboard (:focus-within so tabbing onto either button reveals both, since the
+   other one would otherwise stay invisible while still reachable by Tab). */
+.carousel-holder:hover .carousel-btn,
+.carousel-holder:focus-within .carousel-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 .carousel-btn.prev { left: -10px; }
 .carousel-btn.next { right: -10px; }
@@ -1225,7 +1257,25 @@ main {
 .datagrid-search:focus-within { box-shadow: inset 1px 1px 4px 1px var(--shadow), 0 0 0 2px var(--accent); }
 .datagrid-search input { border: none; background: transparent; outline: none; color: var(--dark); width: 220px; }
 .datagrid-search i { color: var(--secondary-dark); }
-.datagrid-scroll { overflow-x: auto; width: 100%; border-radius: var(--radius-md); }
+/* Fixed (not just minimum) height regardless of how many rows the current page actually has
+   (e.g. a 2-row last page), so paging never shrinks/grows the table, and the pagination bar
+   right after it (a sibling, not nested in here) always lands at the same spot. Default is a
+   flat 60% of viewport height; short pages leave blank space below their rows instead of
+   shrinking the container, and a page whose rows overflow that scrolls internally instead of
+   growing the card and pushing pagination down. */
+.datagrid-scroll { overflow: auto; width: 100%; border-radius: var(--radius-md); height: 60vh; }
+
+/* Opt-out (DataGrid.razor's FixedRowHeight="true") for pages whose grids are meant to size to
+   their own row count rather than stretch to 60vh — sized from --dg-rows (set to PageSize) at
+   --dg-row-height per row (default ~40px for a plain text cell; DataGrid.razor's RowHeight
+   parameter raises this for taller cells, e.g. a 44px TableThumb image column) plus a ~46px
+   header row. */
+.datagrid-scroll.fixed-rows { height: calc(var(--dg-rows, 10) * var(--dg-row-height, 40px) + 46px); }
+
+/* Explicit per-grid viewport-height override (DataGrid.razor's HeightVh) — e.g. Business
+   Locations/Types/Hotels and Membership Privilege's Privileges/Membership Tiers grids, which
+   need their own fixed proportion of the viewport rather than the page-wide default above. */
+.datagrid-scroll.vh-custom { height: calc(var(--dg-vh, 60) * 1vh); }
 .datagrid-table { width: 100%; border-collapse: collapse; text-align: left; }
 .datagrid-table thead tr { border-bottom: 2px solid var(--accent); }
 .datagrid-table th { font-size: 14px; padding: 10px 12px; color: var(--dark); white-space: nowrap; }
@@ -1248,6 +1298,11 @@ main {
 .datagrid-pagination .page-btn:disabled { opacity: 0.4; cursor: default; }
 .datagrid-pagination .page-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .datagrid-pagination .page-info { font-size: 13px; color: var(--dark); }
+/* Numbered page buttons (Pagination.razor). .page-num is a .page-btn, so it inherits the base
+   look above; .active marks the current page and stays legible even though page-btn:disabled
+   would otherwise fade it (the current page's button is disabled to block re-clicking itself). */
+.datagrid-pagination .page-num.active { background: var(--accent); color: white; border-color: var(--accent); opacity: 1; font-weight: 700; }
+.datagrid-pagination .page-ellipsis { color: var(--secondary-dark); font-size: 13px; padding: 0 2px; -webkit-user-select: none; -moz-user-select: none; user-select: none; }
 
 /* ============================================================
    Modal — canonical chrome, shared by Modal.razor and DateRangeModal.razor
@@ -1519,7 +1574,12 @@ main {
 .tab-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* Audit timeline */
-.audit-timeline { display: flex; flex-direction: column; gap: 14px; }
+/* Fixed height, same rationale as .datagrid-scroll in dashboard.css: a short last page (fewer
+   than the full 15-item page) shouldn't shrink this and shift the pagination bar below it. */
+.audit-timeline { display: flex; flex-direction: column; gap: 14px; height: 60vh; overflow-y: auto; }
+/* Opt-out for AuditHistoryModal.razor — a single entity's history sits inside a modal, not a
+   full page, and shouldn't be forced to reserve 60% of the viewport for a handful of records. */
+.audit-timeline.auto-height { height: auto; overflow-y: visible; }
 .audit-item { display: flex; gap: 12px; }
 .audit-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
 .audit-dot.insert { background: var(--status-success-fg); }
