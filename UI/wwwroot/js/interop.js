@@ -34,6 +34,47 @@ window.aopcInterop = {
         localStorage.setItem('aopc-sidebar-collapsed', isCollapsed ? '1' : '0');
     },
 
+    // Blazor's synthetic @onload/@onerror never fire for <img> in Blazor Server: the browser's
+    // 'load'/'error' events on media elements don't bubble, and the circuit's event dispatch only
+    // catches bubbling events via delegation. So table thumbnails need real listeners instead.
+    //
+    // fallbackSrc: TableThumb tries the small generated thumbnail first; if that 404s (an original
+    // uploaded before thumbnails existed has no such file yet), swap to the full-size original named
+    // by fallbackSrc and give that a chance to load before giving up. Pass null when there's nothing
+    // to fall back to (e.g. a legacy external URL).
+    watchImageLoad: function (imgElement, fallbackSrc, dotnetRef) {
+        if (!imgElement) return;
+
+        const settle = function () {
+            imgElement.removeEventListener('load', onLoad);
+            imgElement.removeEventListener('error', onError);
+            dotnetRef.invokeMethodAsync('OnImageSettled');
+        };
+        const onLoad = function () { settle(); };
+        const useFallback = function () {
+            if (fallbackSrc && imgElement.src !== fallbackSrc) {
+                imgElement.addEventListener('load', onLoad, { once: true });
+                imgElement.addEventListener('error', settle, { once: true });
+                imgElement.src = fallbackSrc;
+            } else {
+                settle();
+            }
+        };
+        const onError = function () {
+            imgElement.removeEventListener('load', onLoad);
+            imgElement.removeEventListener('error', onError);
+            useFallback();
+        };
+
+        if (imgElement.complete) {
+            if (imgElement.naturalWidth === 0) useFallback();
+            else settle();
+            return;
+        }
+        imgElement.addEventListener('load', onLoad, { once: true });
+        imgElement.addEventListener('error', onError, { once: true });
+    },
+
     // Two-tone notification chime for new support tickets (SignalR push) — synthesized via
     // WebAudio so no binary audio asset needs to be added to the project.
     playNotificationSound: function () {

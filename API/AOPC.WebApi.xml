@@ -146,11 +146,21 @@
             <summary>Generic image upload endpoint used by every maintenance module's image/logo/gallery fields
             (Business Type, Hotel, Vendor, Membership Tier, Offering, Registration profile photo). Replaces the old
             CMS's several near-identical per-module UploadFile actions with one reusable endpoint: save the file,
-            return its URL, then the caller includes that URL in the normal Save request. No resizing/re-encoding
-            (the old CMS's 400x400 System.Drawing.Bitmap resize is intentionally not ported — deprecated/Windows-only
-            API) — the file is stored exactly as uploaded, under a per-module category folder, e.g.
-            /uploads/business-types/guid.jpg. Also exposes DeleteImage so callers can clean up the file an image
-            field previously pointed at once it's replaced/removed.</summary>
+            return its URL, then the caller includes that URL in the normal Save request. The original is stored
+            exactly as uploaded (no re-encoding), under a per-module category folder, e.g.
+            /uploads/business-types/guid.jpg — plus a small resized copy (UploadPaths.ThumbnailSuffix, via
+            SkiaSharp, a cross-platform/MIT-licensed successor to the old CMS's deprecated/Windows-only
+            System.Drawing.Bitmap resize) saved alongside it, since table listings only need a ~44px thumbnail and
+            downloading the full original for that was the actual cause of slow-loading thumbnails. Also exposes
+            DeleteImage so callers can clean up the file(s) an image field previously pointed at once it's
+            replaced/removed.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiUploadController.TryCreateThumbnail(System.String)">
+            <summary>Best-effort: a thumbnail is a display optimization, not something an upload should fail
+            over (e.g. a corrupt/unsupported-by-SkiaSharp file still saved fine as the original above).
+            Downscales only — an original already smaller than ThumbnailMaxDimension is skipped rather than
+            upscaled into a larger, blurrier "thumbnail". GIFs are decoded to their first frame only,
+            which is fine for a small static table icon.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUploadController.DeleteImage(System.String)">
             <summary>Best-effort cleanup for a file an image field previously pointed at, once it's been
