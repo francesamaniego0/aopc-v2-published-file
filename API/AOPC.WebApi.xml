@@ -4,6 +4,46 @@
         <name>AOPC.WebApi</name>
     </assembly>
     <members>
+        <member name="T:AOPC.WebApi.BackgroundServices.ImageMigrationBackgroundService">
+             <summary>Periodically scans every image-holding field across the DB for a value that isn't already
+             served from this project's own wwwroot/uploads — a bare legacy filename needing the old CMS's static
+             folder prefix, or a full absolute URL pointing at that old host (baked in by a save from before
+             ImageUrlHelper's Resolve/Strip symmetry existed) — downloads it, saves it locally with the same
+             naming/thumbnail treatment ApiUploadController gives a fresh upload, and rewrites the field to the
+             new local bare path. This is what stops every one of those images from silently breaking the moment
+             the old CMS's host goes away.
+            
+             Runs once on startup, then on a fixed interval (Uploads:ImageMigrationIntervalMinutes, default 60),
+             so anything already in the database gets migrated on first run and anything that shows up later
+             (a corporate re-import, a manual DB edit) gets caught on a later pass. Deliberately NOT triggered by
+             a normal read/request — see the migration-trigger decision this was built from — so a slow or
+             unreachable legacy host never adds latency to an ordinary page load.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.BackgroundServices.ImageMigrationBackgroundService.MigrateGalleryAsync(System.Net.Http.HttpClient,System.String,System.String,System.String,System.String,System.Threading.CancellationToken)">
+            <summary>Business.Gallery/Vendor.Gallery hold several images in one field, joined with ';'
+            (see BusinessService/VendorService) — migrate each entry independently and rejoin the same way,
+            leaving any entry that fails to download untouched in place rather than dropping it.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.BackgroundServices.ImageMigrationBackgroundService.TryGetExternalDownloadUrl(System.String,System.String,System.String,System.String@)">
+            <summary>A field is "external" (needs migrating) unless it's empty, already a bare local
+            "/uploads/..." path, or an absolute URL that only LOOKS external because Uploads:PathUrl got
+            baked in by a save from before ImageUrlHelper's Resolve/Strip symmetry existed (stripping that
+            back off reveals it's actually already local). Everything else becomes a downloadable URL: an
+            absolute URL is used as-is, a bare legacy filename gets legacyPrefix prepended.</summary>
+        </member>
+        <member name="T:AOPC.WebApi.Common.ThumbnailGenerator">
+            <summary>Generates the small resized copy (UploadPaths.ThumbnailSuffix) that sits alongside every
+            saved original image, so a table listing only ever has to download ~44px worth of data instead of
+            the full original. Shared by ApiUploadController's live upload path and the background
+            image-migration job — both save a fresh original and need the exact same thumbnail behavior.</summary>
+        </member>
+        <member name="M:AOPC.WebApi.Common.ThumbnailGenerator.TryCreate(System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>Best-effort: a thumbnail is a display optimization, not something a save should fail
+            over (e.g. a corrupt/unsupported-by-SkiaSharp file still saved fine as the original). Downscales
+            only — an original already smaller than ThumbnailMaxDimension is skipped rather than upscaled
+            into a larger, blurrier "thumbnail". GIFs are decoded to their first frame only, which is fine
+            for a small static table icon.</summary>
+        </member>
         <member name="T:AOPC.WebApi.Common.UploadPaths">
             <summary>Resolves the "Uploads" appsettings section (see ApiUploadController): where uploaded
             files are physically stored, and the max size allowed per file.</summary>
@@ -154,13 +194,6 @@
             downloading the full original for that was the actual cause of slow-loading thumbnails. Also exposes
             DeleteImage so callers can clean up the file(s) an image field previously pointed at once it's
             replaced/removed.</summary>
-        </member>
-        <member name="M:AOPC.WebApi.Controllers.ApiUploadController.TryCreateThumbnail(System.String)">
-            <summary>Best-effort: a thumbnail is a display optimization, not something an upload should fail
-            over (e.g. a corrupt/unsupported-by-SkiaSharp file still saved fine as the original above).
-            Downscales only — an original already smaller than ThumbnailMaxDimension is skipped rather than
-            upscaled into a larger, blurrier "thumbnail". GIFs are decoded to their first frame only,
-            which is fine for a small static table icon.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUploadController.DeleteImage(System.String)">
             <summary>Best-effort cleanup for a file an image field previously pointed at, once it's been

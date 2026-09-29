@@ -609,7 +609,10 @@
         </member>
         <member name="M:AOPC.Application.Common.Utils.EmailTemplates.Wrap(System.String)">
             <summary>The shared shell. Pass only the card's inner content; the backdrop, logo banner and
-            white card come from here.</summary>
+            white card come from here. A full document (doctype/html/head/body), not a bare fragment — a
+            stray &lt;style&gt; tag in front of a headless &lt;body&gt; is malformed enough that some mail
+            clients' sanitizers mishandle the rest of the markup along with it, silently dropping the
+            inline styles that make this a centered, rounded "card" instead of a full-bleed block.</summary>
         </member>
         <member name="M:AOPC.Application.Common.Utils.EmailTemplates.LoginOtp(System.String,System.String)">
             <summary>Login second factor — the code AuthService.LoginAsync emails before issuing tokens.</summary>
