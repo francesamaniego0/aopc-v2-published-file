@@ -176,9 +176,10 @@
             <summary>Builds a single-worksheet .xlsx from the given headers + rows and returns its bytes.
             Used by the dashboard export endpoints.</summary>
         </member>
-        <member name="M:AOPC.Application.Common.Interfaces.IExcelService.WriteWorkbook(System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IEnumerable{System.Collections.Generic.IReadOnlyList{System.Object}}}})">
-            <summary>Builds a multi-worksheet .xlsx, one sheet per (SheetName, Headers, Rows) tuple, and
-            returns its bytes. Used by the dashboard global-export endpoint.</summary>
+        <member name="M:AOPC.Application.Common.Interfaces.IExcelService.WriteSections(System.String,System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.Collections.Generic.IReadOnlyList{System.String},System.Collections.Generic.IEnumerable{System.Collections.Generic.IReadOnlyList{System.Object}}}})">
+            <summary>Builds a single-worksheet .xlsx with each (Title, Headers, Rows) section stacked one
+            after another, separated by a blank row, with its own title row and header row. Used by the
+            dashboard global-export endpoint so the whole dashboard downloads as one sheet.</summary>
         </member>
         <member name="T:AOPC.Application.Common.Interfaces.IFamilyMemberService">
             <summary>Ports the family member CRUD actions from
