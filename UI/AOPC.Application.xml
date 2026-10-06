@@ -1830,7 +1830,9 @@
             <summary>Ports AudtiTrails (action name/typo preserved).</summary>
         </member>
         <member name="M:AOPC.Application.Services.UserAccessService.SaveJwTokenAsync(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
-            <summary>Ports SaveJWToken.</summary>
+            <summary>Ports SaveJWToken. Added validation (not in the original): rejects the request before
+            creating a token or sending an email unless the address belongs to a registered account — the
+            original sent a reset link to any email typed in, registered or not.</summary>
         </member>
         <member name="M:AOPC.Application.Services.UserAccessService.SendTrailSupportAsync(AOPC.Application.DTOs.UserAccess.SupportModelDto,System.Threading.CancellationToken)">
             <summary>Ports TrailSupport.</summary>
