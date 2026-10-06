@@ -18,12 +18,19 @@ window.aopcInterop = {
     },
 
     // Persists the dark-mode preference across reloads (Blazor Server's UiState is circuit-scoped
-    // and otherwise resets to Light on every reconnect).
+    // and otherwise resets to Light on every reconnect). Also toggles the class on <html> itself —
+    // MainLayout only ever applies ".darkmode" to an inner wrapper div, so the dark CSS variable
+    // overrides (scoped to ".darkmode" in variables.css) never reach <body>'s own background, which
+    // is an ancestor of that div, not a descendant. Mirroring the class onto <html> lets the override
+    // cascade all the way down through <body> as well.
     getDarkMode: function () {
-        return localStorage.getItem('aopc-dark-mode') === '1';
+        var isDark = localStorage.getItem('aopc-dark-mode') === '1';
+        document.documentElement.classList.toggle('darkmode', isDark);
+        return isDark;
     },
     setDarkMode: function (isDark) {
         localStorage.setItem('aopc-dark-mode', isDark ? '1' : '0');
+        document.documentElement.classList.toggle('darkmode', isDark);
     },
 
     // Persists the desktop sidebar collapse preference across reloads, same rationale as dark mode.

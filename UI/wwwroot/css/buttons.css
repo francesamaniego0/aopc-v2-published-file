@@ -164,6 +164,16 @@
 }
 
 .theme-switch-icon {
+  /* The thumb is absolutely positioned, so it never actually competes with these two for the flex
+     row's space-between — the icons alone own it, pinned flush to the pill's left/right padding.
+     Without their own fixed box they center on the glyph's raw inline metrics, which for these
+     FontAwesome icons sits a little off — giving each one an explicit square box to center within
+     keeps sun and moon visually centered in their slot instead of drifting with font metrics. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.55);
   z-index: 1;

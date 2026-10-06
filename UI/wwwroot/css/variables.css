@@ -45,11 +45,17 @@
   --row-hover-bg-solid: #f9f4e9;
 }
 
+/* :root.darkmode (interop.js also toggles this class on <html>) lets these overrides cascade down
+   through <body>'s own background — the ".darkmode" class alone only ever sits on MainLayout's
+   inner wrapper div, which is a descendant of <body>, not an ancestor, so <body> could never see it. */
+:root.darkmode,
 .darkmode {
-  /* Was pure black — read as harsh/"super black" against the gold accent. Near-black instead,
-     with panels one step lighter than the page background for real depth (see --panel below). */
-  --light: #141414;
-  --panel: #1e1e1e;
+  /* Was #141414/#1e1e1e — now that <body> itself actually turns dark (see the :root.darkmode note
+     above; it used to stay white and mask just how dark these were), that read as too heavy/harsh
+     across the whole page rather than just within panels. Lightened a step, panels still one step
+     lighter than the page background for the same relative depth (see --panel below). */
+  --light: #1c1c1e;
+  --panel: #27272a;
   --dark: #ededed;
   /* Neutral/structural tokens get dark-safe values too — --accent and the semantic
      secondary-red/green/brown/gray brand colors below are intentionally untouched. */
@@ -72,8 +78,8 @@
 
   --zebra-bg: rgba(255, 255, 255, 0.045);
 
-  --zebra-bg-solid: #282828;
-  --row-hover-bg-solid: #2f2a1f;
+  --zebra-bg-solid: #313134;
+  --row-hover-bg-solid: #38332b;
 }
 
 @font-face {

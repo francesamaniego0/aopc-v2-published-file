@@ -39,11 +39,18 @@
   --row-hover-bg-solid: #f9f4e9;
 }
 
+/* :root.darkmode (interop.js also toggles this class on <html>) lets these overrides cascade down
+   through <body>'s own background — the ".darkmode" class alone only ever sits on MainLayout's
+   inner wrapper div, which is a descendant of <body>, not an ancestor, so <body> could never see it. */
+
+:root.darkmode,
 .darkmode {
-  /* Was pure black — read as harsh/"super black" against the gold accent. Near-black instead,
-     with panels one step lighter than the page background for real depth (see --panel below). */
-  --light: #141414;
-  --panel: #1e1e1e;
+  /* Was #141414/#1e1e1e — now that <body> itself actually turns dark (see the :root.darkmode note
+     above; it used to stay white and mask just how dark these were), that read as too heavy/harsh
+     across the whole page rather than just within panels. Lightened a step, panels still one step
+     lighter than the page background for the same relative depth (see --panel below). */
+  --light: #1c1c1e;
+  --panel: #27272a;
   --dark: #ededed;
   /* Neutral/structural tokens get dark-safe values too — --accent and the semantic
      secondary-red/green/brown/gray brand colors below are intentionally untouched. */
@@ -62,8 +69,8 @@
   --status-warn-bg: rgba(243, 156, 18, 0.18);
   --status-warn-fg: #ffbb54;
   --zebra-bg: rgba(255, 255, 255, 0.045);
-  --zebra-bg-solid: #282828;
-  --row-hover-bg-solid: #2f2a1f;
+  --zebra-bg-solid: #313134;
+  --row-hover-bg-solid: #38332b;
 }
 
 @font-face {
@@ -302,6 +309,16 @@ body {
 }
 
 .theme-switch-icon {
+  /* The thumb is absolutely positioned, so it never actually competes with these two for the flex
+     row's space-between — the icons alone own it, pinned flush to the pill's left/right padding.
+     Without their own fixed box they center on the glyph's raw inline metrics, which for these
+     FontAwesome icons sits a little off — giving each one an explicit square box to center within
+     keeps sun and moon visually centered in their slot instead of drifting with font metrics. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.55);
   z-index: 1;
@@ -768,7 +785,11 @@ he.sidebar-collapsed {
 .hero {
   background-image: url("https://www.alfardanoysterprivilegeclub.com/build/assets/black-cover-pattern-f558a9d0.jpg");
   width: 100%;
-  height: 100vh;
+  /* min-height, not height: on small screens the form content can be taller than one viewport
+     (triggering a page scroll). A fixed 100vh would stop growing there and let the content spill
+     out past it, leaving the scrolled-past area with no background at all. min-height lets this
+     box — and therefore its background — grow to cover the full scrollable content instead. */
+  min-height: 100vh;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -788,7 +809,7 @@ he.sidebar-collapsed {
   position: relative;
   right: 0;
   top: 0;
-  height: 100vh;
+  min-height: 100vh;
   width: 600px;
   display: flex;
   flex-direction: column;
@@ -895,6 +916,46 @@ form .pass-cont > .view-pass {
 #caps-warning {
   color: var(--secondary-red);
   font-weight: 800;
+}
+
+/* Mobile: .form-container/.form are fixed-px-wide (600px/500px) for the desktop layout, which
+   overflows and forces horizontal scrolling on any narrower viewport. Below this breakpoint the
+   form switches to a fluid, padded column instead, and the oversized top margin above the logo
+   (meant to vertically center it against a tall desktop hero) is cut down so the form isn't pushed
+   needlessly far down the page before the user even sees it. */
+
+@media (max-width: 640px) {
+  .hero {
+    justify-content: center;
+  }
+
+  .form-container {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .form-container .form {
+    width: 100%;
+  }
+
+  .login-logo-conctainer {
+    margin: 48px auto 0 auto;
+  }
+
+  .hero h1 {
+    text-align: center;
+  }
+
+  .btn-save {
+    align-self: stretch;
+    width: 100%;
+    text-align: center;
+  }
+
+  .otp-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 
 main {
