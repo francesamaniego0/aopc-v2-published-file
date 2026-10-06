@@ -219,16 +219,19 @@
             <summary>Mobile: Save Action to audittrails. Action name/typo preserved verbatim from the legacy route.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.SaveJWToken(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
-            <summary>Mobile: Send reset password link.</summary>
+            <summary>Mobile: Send reset password link. Must be reachable without a session — a user who forgot
+            their password has no JWT to present, the same reason LogIn is [AllowAnonymous].</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.TrailSupport(AOPC.Application.DTOs.UserAccess.SupportModelDto,System.Threading.CancellationToken)">
             <summary>Mobile: New Support and Send email.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.GetKeyExpiry(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
-            <summary>Mobile: GetKeyExpiry.</summary>
+            <summary>Mobile: GetKeyExpiry. Part of the same anonymous reset-password flow as SaveJWToken —
+            the reset page calls this to validate the link's token before the user is logged in.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.DeleteToken(AOPC.Application.DTOs.UserAccess.JWTokenModelDto,System.Threading.CancellationToken)">
-            <summary>Mobile: Delete Token.</summary>
+            <summary>Mobile: Delete Token. Part of the same anonymous reset-password flow as SaveJWToken —
+            invalidates the reset link's token once it's been used, before the user is logged in.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.QrCodeLogs(AOPC.Application.DTOs.UserAccess.QrLogsModelDto,System.Threading.CancellationToken)">
             <summary>Mobile: Save QrCodeLogs.</summary>
@@ -240,7 +243,8 @@
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.UserInfoFilteredbyJWToken(AOPC.Application.DTOs.UserAccess.JwtModelDto,System.Threading.CancellationToken)">
             <summary>Mobile: Get User info by JWT Token. Original never returns NotFound — always 200, possibly
-            with an empty/default VM.</summary>
+            with an empty/default VM. Part of the same anonymous reset-password flow as SaveJWToken — the reset
+            page resolves which user the link belongs to before the user is logged in.</summary>
         </member>
         <member name="M:AOPC.WebApi.Controllers.ApiUserAcessController.Upload(Microsoft.AspNetCore.Http.IFormFile,System.Threading.CancellationToken)">
             <summary>Literal route override preserved exactly: final route is api/ApiUserAcess/upload
