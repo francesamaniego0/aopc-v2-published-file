@@ -107,6 +107,23 @@ form .pass-cont > .view-pass {
   cursor: pointer;
 }
 
+.otp-hint {
+  color: white;
+}
+
+.otp-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.otp-actions a,
+.otp-actions span.otp-hint {
+  align-self: auto;
+  margin: 0;
+}
+
 #caps-warning {
   color: var(--secondary-red);
   font-weight: 800;

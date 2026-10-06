@@ -847,6 +847,10 @@
         <member name="T:AOPC.Application.DTOs.Auth.RefreshRequestDto">
             <summary>Payload for the new (not-a-port) Refresh endpoint.</summary>
         </member>
+        <member name="T:AOPC.Application.DTOs.Auth.ResendOtpRequestDto">
+            <summary>Request body for ApiLogInController.ResendOtp — re-sends a fresh code for an OTP flow that
+            LogIn already started (does not itself re-check the password).</summary>
+        </member>
         <member name="T:AOPC.Application.DTOs.Auth.VerifyLoginOtpRequestDto">
             <summary>Request body for ApiLogInController.VerifyLoginOtp — confirms the email code sent by LogIn
             and, on success, issues the JWT access/refresh tokens that LogIn itself withheld.</summary>
@@ -1537,6 +1541,19 @@
             - Adds RefreshAsync, a genuinely new flow (the original only had dead-code stubs for this, never wired
               up to a real RefreshToken model).
             Rate limiting and account lockout are preserved with identical parameters/order of checks.</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuthService.SendLoginOtpAsync(AOPC.Domain.Entities.User,System.Threading.CancellationToken)">
+            <summary>Generates and emails a fresh OTP, overwriting any previous one and resetting its TTL.
+            Shared by LoginAsync (first send) and ResendLoginOtpAsync (resend).</summary>
+        </member>
+        <member name="M:AOPC.Application.Services.AuthService.ResendLoginOtpAsync(AOPC.Application.DTOs.Auth.ResendOtpRequestDto,System.String,System.Threading.CancellationToken)">
+            <summary>New flow — resends a fresh code for an OTP session LoginAsync already started. Deliberately
+            does NOT re-check the password (the client only ever shows a resend option after LoginAsync's OTP
+            step), but to keep this anonymous endpoint from being usable as a password-free "spam this user's
+            email" primitive, it only sends when there is already a live OTP cache entry for the account — i.e.
+            a real, password-verified LoginAsync call started one within the last <see cref="F:AOPC.Application.Services.AuthService.OtpTtl"/>. A
+            per-username rate limit on top of that enforces the resend cooldown server-side even if a caller
+            bypasses the client's countdown UI.</summary>
         </member>
         <member name="M:AOPC.Application.Services.AuthService.VerifyLoginOtpAsync(AOPC.Application.DTOs.Auth.VerifyLoginOtpRequestDto,System.String,System.Threading.CancellationToken)">
             <summary>New flow — confirms the code LoginAsync emailed and, only on success, issues the JWT

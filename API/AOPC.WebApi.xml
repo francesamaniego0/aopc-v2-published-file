@@ -106,6 +106,9 @@
             <summary>New endpoint — confirms the email code LogIn sent and, only on success, issues the JWT
             access/refresh tokens that LogIn itself withheld.</summary>
         </member>
+        <member name="M:AOPC.WebApi.Controllers.ApiLogInController.ResendOtp(AOPC.Application.DTOs.Auth.ResendOtpRequestDto,System.Threading.CancellationToken)">
+            <summary>New endpoint — resends a fresh code for the OTP session LogIn already started.</summary>
+        </member>
         <member name="M:AOPC.WebApi.Controllers.ApiLogInController.Refresh(AOPC.Application.DTOs.Auth.RefreshRequestDto,System.Threading.CancellationToken)">
             <summary>New endpoint (not a port) — the plan commits to a working refresh-token flow that the
             original never actually implemented, only stubbed with dead code.</summary>
