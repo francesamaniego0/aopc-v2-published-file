@@ -2662,6 +2662,9 @@ video {
 [hidden]:where(:not([hidden="until-found"])) {
   display: none;
 }
+.invisible {
+  visibility: hidden;
+}
 .static {
   position: static;
 }
