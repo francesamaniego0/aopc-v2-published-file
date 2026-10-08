@@ -385,8 +385,13 @@
         <member name="T:AOPC.Application.Common.Interfaces.IRegistrationService">
             <summary>Ports the registration/OTP flows from AuthSystem.Data.Controller.ApiRegisterController.</summary>
         </member>
-        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.ChangePasswordAsync(AOPC.Application.DTOs.Registration.ChangePasswordDto,System.Threading.CancellationToken)">
-            <summary>Mirrors ChangePassword. Returns (found, message).</summary>
+        <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.ChangePasswordAsync(AOPC.Application.DTOs.Registration.ChangePasswordDto,System.Boolean,System.Threading.CancellationToken)">
+            <summary>Mirrors ChangePassword. Returns (found, message). requireResetToken gates the anonymous
+            public forgot-password flow: true requires a live, unexpired reset-link Token for data.Email (the
+            same Token row SaveJwTokenAsync/GetKeyExpiryAsync/DeleteTokenAsync manage) before allowing the
+            change, so an anonymous caller can't set an arbitrary account's password by email alone. The CMS
+            admin's own "Reset Password" action passes false — an authenticated admin's own authorization is
+            already sufficient, no reset link was ever generated for that direct action.</summary>
         </member>
         <member name="M:AOPC.Application.Common.Interfaces.IRegistrationService.FinalUserRegistrationAsync(AOPC.Application.DTOs.Registration.UserRegistrationDto,System.Threading.CancellationToken)">
             <summary>Mirrors FinalUserRegistration: updates credentials, sends an SMS OTP via ISmsService, and
