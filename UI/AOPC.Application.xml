@@ -1894,6 +1894,13 @@
             JOIN results is explicit where the original relied on SQL Server's NULL-column semantics.
             </summary>
         </member>
+        <member name="M:AOPC.Application.Services.UserService.FindDuplicateUserMessageAsync(System.String,System.String,System.Int32,System.Threading.CancellationToken)">
+            <summary>Shared by SaveUserInfoAsync's create and update paths. Names which field is actually
+            taken (username, email, or both) instead of a generic "already used" — matches against other
+            active accounts only (Active != 6 excludes inactive/soft-deleted), and excludeId lets the update
+            path skip the record being edited itself (keeping its own unchanged email/username isn't a
+            duplicate). Returns null when neither is taken.</summary>
+        </member>
         <member name="T:AOPC.Application.Services.VendorService">
             <summary>
             Ports ApiVendorController's 13 active endpoints. Multi-entity joins that the original expressed
